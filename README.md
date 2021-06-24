@@ -1,4 +1,4 @@
-# Long Cat Game
+# Long Cat Game :D
 
 Trello: https://trello.com/b/mgPBrX7p/long-cat-game
 
