@@ -1,4 +1,4 @@
-# Block Puzzle Game
+# Long Cat
 
 Trello: https://trello.com/b/mgPBrX7p/long-cat-game
 
