@@ -4,8 +4,9 @@ public class CatMovement : MonoBehaviour
 {
     LayerMask ground = 6;
 
-    void MoveCat(int p)
+    void MoveCat(DataClass.Directions dirIndex)
     {
+        int p = (int) dirIndex;
         int dir = p % 2 == 0 ? 1 : -1;
         Vector3 newDirection = p < 2 ? dir * Vector3.forward : dir * Vector3.right;
         
@@ -39,19 +40,19 @@ public class CatMovement : MonoBehaviour
             //check if next area is a possible move
             if (Input.GetKey("up"))
             {
-                MoveCat((int)DataClass.Directions.Forward);
+                MoveCat(DataClass.Directions.Forward);
             }
             else if(Input.GetKey("down"))
             {
-                MoveCat((int)DataClass.Directions.Behind);
+                MoveCat(DataClass.Directions.Behind);
             }
             else if(Input.GetKey("right"))
             {
-                MoveCat((int)DataClass.Directions.Right);
+                MoveCat(DataClass.Directions.Right);
             }
             else if(Input.GetKey("left"))
             {
-                MoveCat((int)DataClass.Directions.Left);
+                MoveCat(DataClass.Directions.Left);
             }
         }
     }
