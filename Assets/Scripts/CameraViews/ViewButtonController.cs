@@ -7,11 +7,11 @@ public class ViewButtonController : MonoBehaviour
 {
     private CameraController cameraController;
     [SerializeField]
-    private ViewDirection setCameraViewTo;
-    // Start is called before the first frame update
+    private bool isClockwiseSpinAbove;
+
     void Awake() {
        cameraController = FindObjectOfType<CameraController>();
        Button thisButton = GetComponent<Button>();
-       thisButton.onClick.AddListener(() => {cameraController.SetCurrentView(setCameraViewTo);});    
+       thisButton.onClick.AddListener(() => {cameraController.RotateView(isClockwiseSpinAbove);});    
     }
 }

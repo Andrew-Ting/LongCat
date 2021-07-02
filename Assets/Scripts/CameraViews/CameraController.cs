@@ -8,11 +8,16 @@ public class CameraController : MonoBehaviour
     [SerializeField] private int angleOfInclineDegrees = 45;
     private ViewDirection currentView = ViewDirection.North;
 
-    public void SetCurrentView(ViewDirection newView) {
-        currentView = newView;
+    public void RotateView(bool isDirectionClockwiseAbove) {
+        currentView += (isDirectionClockwiseAbove ? 1 : -1);
+        currentView = (ViewDirection)(((int)currentView + 4) % 4);
+        SetViewDirectionTo(currentView);
+    }
+
+    void SetViewDirectionTo(ViewDirection destinationView){
         float cameraHeight = distanceToCharacter * Mathf.Sin(Mathf.PI / 180 * angleOfInclineDegrees);
         float cameraHorizontalProjection = distanceToCharacter * Mathf.Cos(Mathf.PI / 180 * angleOfInclineDegrees) / Mathf.Sqrt(2);
-        switch (newView) {
+        switch (destinationView) {
             case ViewDirection.North:
                 transform.position = new Vector3(-cameraHorizontalProjection, cameraHeight, -cameraHorizontalProjection);
                 transform.rotation = Quaternion.Euler(angleOfInclineDegrees, 45, 0);
@@ -31,7 +36,8 @@ public class CameraController : MonoBehaviour
                 break;
         }
     }
+
     void Start() {
-       SetCurrentView(currentView); 
+       SetViewDirectionTo(currentView); 
     }
 }
