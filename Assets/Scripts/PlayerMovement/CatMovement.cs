@@ -23,23 +23,22 @@ public class CatMovement : MonoBehaviour
         if (Physics.Raycast(moveCheckerRay, out hit, catHeight + 2, ~ground))
         {
             FaceDirection(newDirection);
+            Vector3 newMoveDirection = newDirection;
             if (hit.transform.gameObject.layer == ground) // hits ground, meaning either lowest point or 1 layer 
             {
-                if (hit.transform.position.y + 1 < transform.position.y) transform.position -= Vector3.up;
-                transform.position += newDirection;
-                CatMoveAction?.Invoke(newDirection);
+                if (hit.transform.position.y + 1 < transform.position.y) newMoveDirection -= Vector3.up;
             }
             else //hits a platform
             {
                 //same layer
                 if (hit.transform.position.y + 1 == transform.position.y)
                 {
-                    transform.position += newDirection;
+                    newMoveDirection = newDirection;
                 }
                 //exactly one block lower but still platform
                 else if (hit.transform.position.y + 1 < transform.position.y)
                 {
-                    transform.position += newDirection - Vector3.up;
+                    newMoveDirection -= Vector3.up;
                 }
                 //if one block or higher, since no other cases do this (this is for climbing)
                 else
@@ -48,7 +47,6 @@ public class CatMovement : MonoBehaviour
                     Vector3 climbBlockPosition = hit.transform.position;
                     if (checkPlatforms.Length >= 2) // gap is possible
                     {
-                        Debug.Log("hit two plats");
                         if (catHeight > checkPlatforms[1].transform.position.y - transform.position.y + 1) // 
                         {
                             climbBlockPosition = checkPlatforms[1].transform.position;
@@ -61,24 +59,30 @@ public class CatMovement : MonoBehaviour
                         Vector3 catHeightClimb = new Vector3(transform.position.x, finalPos.y + transform.position.y, transform.position.z);
                         float dist = Vector3.Distance(catHeightClimb, climbBlockPosition) + 1;
 
-                        if(!Physics.Raycast(catHeightClimb, newDirection, dist, ~(platforms|ground))) //check if space is not occupied
+                        if(!Physics.Raycast(catHeightClimb, newDirection, dist, ~(platforms | ground))) //check if space is not occupied
                         {
-                            if(Physics.Raycast(transform.position + finalPos, -Vector3.up, 1, ~(platforms| ground))) // check if theres ground at final space
+                            if(Physics.Raycast(transform.position + finalPos, -Vector3.up, 1, ~(platforms | ground))) // check if theres ground at final space
                             {
-                                transform.position += finalPos;
+                                newMoveDirection = finalPos;
                             }
                             else
                             {
+                                //add animation?
+                                newMoveDirection = Vector3.zero;
                                 Debug.Log("no block below to land on");
                             }
                         }
                         else
                         {
+                            //add animation?
+                            newMoveDirection = Vector3.zero;
                             Debug.Log("Something is blocking on space to land on");
                         }
                     }
                 }
             }
+            transform.position += newMoveDirection;
+            CatMoveAction?.Invoke(newMoveDirection);
         }
         else
         {
@@ -96,6 +100,7 @@ public class CatMovement : MonoBehaviour
     {
         cameraController = FindObjectOfType<CameraController>();
     }
+
     void Start()
     {
         transform.position = Vector3.zero + Vector3.up;
