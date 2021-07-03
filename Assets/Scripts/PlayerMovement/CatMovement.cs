@@ -33,6 +33,7 @@ public class CatMovement : MonoBehaviour
                 //same layer
                 if (hit.transform.position.y + 1 == transform.position.y)
                 {
+                    //think about this in the future
                     newMoveDirection = newDirection;
                 }
                 //exactly one block lower but still platform
