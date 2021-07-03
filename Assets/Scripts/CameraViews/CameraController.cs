@@ -8,7 +8,7 @@ public class CameraController : MonoBehaviour
     [SerializeField] private int angleOfInclineDegrees = 45;
     private DataClass.ViewDirection currentView = DataClass.ViewDirection.North;
     private CatMovement catMovement;
-
+    private Vector3 deltaCatMovement;
     public void RotateView(bool isDirectionClockwiseAbove) {
         currentView += (isDirectionClockwiseAbove ? 1 : -1);
         currentView = (DataClass.ViewDirection)(((int)currentView + 4) % 4);
@@ -20,19 +20,19 @@ public class CameraController : MonoBehaviour
         float cameraHorizontalProjection = distanceToCharacter * Mathf.Cos(Mathf.PI / 180 * angleOfInclineDegrees) / Mathf.Sqrt(2);
         switch (destinationView) {
             case DataClass.ViewDirection.North:
-                transform.position = new Vector3(-cameraHorizontalProjection, cameraHeight, -cameraHorizontalProjection);
+                transform.position = new Vector3(-cameraHorizontalProjection, cameraHeight, -cameraHorizontalProjection) + deltaCatMovement;
                 transform.rotation = Quaternion.Euler(angleOfInclineDegrees, 45, 0);
                 break;
             case DataClass.ViewDirection.East:
-                transform.position = new Vector3(-cameraHorizontalProjection, cameraHeight, cameraHorizontalProjection);
+                transform.position = new Vector3(-cameraHorizontalProjection, cameraHeight, cameraHorizontalProjection) + deltaCatMovement;
                 transform.rotation = Quaternion.Euler(angleOfInclineDegrees, 135, 0);
                 break;
             case DataClass.ViewDirection.South:
-                transform.position = new Vector3(cameraHorizontalProjection, cameraHeight, cameraHorizontalProjection);
+                transform.position = new Vector3(cameraHorizontalProjection, cameraHeight, cameraHorizontalProjection) + deltaCatMovement;
                 transform.rotation = Quaternion.Euler(angleOfInclineDegrees, 225, 0);
                 break;
             case DataClass.ViewDirection.West:
-                transform.position = new Vector3(cameraHorizontalProjection, cameraHeight, -cameraHorizontalProjection);
+                transform.position = new Vector3(cameraHorizontalProjection, cameraHeight, -cameraHorizontalProjection) + deltaCatMovement;
                 transform.rotation = Quaternion.Euler(angleOfInclineDegrees, 315, 0);
                 break;
         }
@@ -42,8 +42,9 @@ public class CameraController : MonoBehaviour
         return currentView;
     }
 
-    void AdjustPosition(Vector3 deltaCatMovement) {
-        transform.position += deltaCatMovement;
+    void AdjustPosition(Vector3 currentDeltaCatMovement) {
+        transform.position += currentDeltaCatMovement;
+        deltaCatMovement += currentDeltaCatMovement;
     }
 
     void Awake() {
