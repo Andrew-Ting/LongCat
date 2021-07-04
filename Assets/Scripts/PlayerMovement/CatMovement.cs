@@ -42,7 +42,7 @@ public class CatMovement : MonoBehaviour
             //hits something / something is blocking the way
             bool canClimb = false;
             Vector3 blockClimb = Vector3.zero;
-            for(int i = 0; i < catHeight; i++)
+            for(int i = 0; i < catHeight - 1; i++)
             {
                 Vector3 blockCheck = transform.position + transform.forward + Vector3.up * i;
                 if (!Physics.Raycast(blockCheck, Vector3.up, 1, ~objects) && Physics.Raycast(blockCheck + Vector3.up, -Vector3.up, 1, ~objects))
@@ -56,10 +56,10 @@ public class CatMovement : MonoBehaviour
             {
                 Vector3 finalPos = newDirection * (catHeight + (int)transform.position.y - 1 - (int)blockClimb.y) - Vector3.up * ((int)transform.position.y - 1 - (int)blockClimb.y);
                 Vector3 catHeightClimb = new Vector3(transform.position.x, finalPos.y + transform.position.y, transform.position.z);
-                float dist = Vector3.Distance(catHeightClimb, blockClimb);
-                if (!Physics.Raycast(catHeightClimb, newDirection, dist, ~objects)) //check if space is not occupied
+                float dist = Vector3.Distance(catHeightClimb, transform.position + finalPos);
+                if (!Physics.Raycast(catHeightClimb, newDirection, dist, ~objects)) //check if climb space is not occupied horizontally
                 {
-                    if (Physics.Raycast(transform.position + finalPos, -Vector3.up, 1, ~objects)) // check if theres ground at final space
+                    if (Physics.Raycast(transform.position + finalPos, -Vector3.up, 1, ~objects)) // check if theres ground at final space 
                     {
                         if(!Physics.Raycast(transform.position + finalPos, Vector3.up, catHeight -1, ~objects)) // height at final pos is enough
                         {
@@ -108,6 +108,6 @@ public class CatMovement : MonoBehaviour
 
     void Start()
     {
-        transform.position = Vector3.forward + Vector3.up;
+
     }
 }
