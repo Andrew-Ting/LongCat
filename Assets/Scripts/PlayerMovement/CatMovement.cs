@@ -1,28 +1,36 @@
 using UnityEngine;
 using System;
+using System.Collections.Generic;
 
 public class CatMovement : MonoBehaviour
 {
-    public int catHeight;
-
-    LayerMask objects = 6 | 7;
+    [SerializeField]
+    private int catHeight;
+    [SerializeField]
+    LayerMask blocksLayer = (1 << 7);
+    [SerializeField]
+    LayerMask objects = (1 << 6 | 1 << 7);
     public event Action<Vector3> CatMoveAction;
     private CameraController cameraController;
-
+    private BlockManager blockManager;
+    private Vector3 moveCatVector; // direction cat will move once it is ready for movement
+    private bool areBlocksMoving = false;
     public void MoveCat(DataClass.Directions dirIndex)
     {
+        if (areBlocksMoving) // you don't want the cat to be able to move as blocks are falling; opens a can of worms in logic
+            return;
         int p = ((int)dirIndex + (int)cameraController.GetCameraView()) % 4;
         int dir = p < 2 ? 1 : -1;
         Vector3 newDirection = p % 2 == 0 ? dir * Vector3.forward : dir * Vector3.right;
         FaceDirection(newDirection);
         Vector3 newMoveDirection = newDirection; // this is relative
-
-        if (!Physics.Raycast(transform.position + Vector3.up * catHeight + transform.forward, -Vector3.up, catHeight, ~objects))
+        bool willPushSomething = false;
+        if (!Physics.Raycast(transform.position + Vector3.up * catHeight + transform.forward, -Vector3.up, catHeight, objects))
         {
             Ray ray = new Ray(transform.position + transform.forward, -Vector3.up);
             RaycastHit hit;
             //nothing is in front of it
-            if (Physics.Raycast(ray, out hit, 2, ~objects))
+            if (Physics.Raycast(ray, out hit, 2, objects))
             {
                 //hits something
                 if(hit.transform.position.y + 1 != transform.position.y)
@@ -45,7 +53,7 @@ public class CatMovement : MonoBehaviour
             for(int i = 0; i < catHeight - 1; i++)
             {
                 Vector3 blockCheck = transform.position + transform.forward + Vector3.up * i;
-                if (!Physics.Raycast(blockCheck, Vector3.up, 1, ~objects) && Physics.Raycast(blockCheck + Vector3.up, -Vector3.up, 1, ~objects))
+                if (!Physics.Raycast(blockCheck, Vector3.up, 1, objects) && Physics.Raycast(blockCheck + Vector3.up, -Vector3.up, 1, objects))
                 {
                     canClimb = true;
                     blockClimb = blockCheck;
@@ -57,11 +65,11 @@ public class CatMovement : MonoBehaviour
                 Vector3 finalPos = newDirection * (catHeight + (int)transform.position.y - 1 - (int)blockClimb.y) - Vector3.up * ((int)transform.position.y - 1 - (int)blockClimb.y);
                 Vector3 catHeightClimb = new Vector3(transform.position.x, finalPos.y + transform.position.y, transform.position.z);
                 float dist = Vector3.Distance(catHeightClimb, transform.position + finalPos);
-                if (!Physics.Raycast(catHeightClimb, newDirection, dist, ~objects)) //check if climb space is not occupied horizontally
+                if (!Physics.Raycast(catHeightClimb, newDirection, dist, objects)) //check if climb space is not occupied horizontally
                 {
-                    if (Physics.Raycast(transform.position + finalPos, -Vector3.up, 1, ~objects)) // check if theres ground at final space 
+                    if (Physics.Raycast(transform.position + finalPos, -Vector3.up, 1, objects)) // check if theres ground at final space 
                     {
-                        if(!Physics.Raycast(transform.position + finalPos, Vector3.up, catHeight -1, ~objects)) // height at final pos is enough
+                        if(!Physics.Raycast(transform.position + finalPos, Vector3.up, catHeight -1, objects)) // height at final pos is enough
                         {
                             newMoveDirection = finalPos;
                         }
@@ -85,16 +93,67 @@ public class CatMovement : MonoBehaviour
                     newMoveDirection = Vector3.zero;
                     Debug.Log("Something is blocking on space to land on");
                 }
-            }
+            } 
+            // if the block can't be climbed, can it be pushed?
             else
             {
-                newMoveDirection = Vector3.zero;
+
+                if (PushConditionMet()) { 
+                    // can be pushed
+                    willPushSomething = true;
+                }
+                else
+                    newMoveDirection = Vector3.zero;
             }
         }
-        transform.position += newMoveDirection;
+        moveCatVector = newMoveDirection;
+        if (!willPushSomething)
+            ReadyForMovement();
+        Debug.Log(newMoveDirection);
         CatMoveAction?.Invoke(newMoveDirection);
     }
 
+    public void ReadyForMovement() {
+        transform.position += moveCatVector;
+    }
+    public void SetAreBlocksMoving(bool newState) {
+        areBlocksMoving = newState;
+    }
+    bool PushConditionMet() {
+        RaycastHit[] hits;
+        hits = Physics.RaycastAll(transform.position + Vector3.up * catHeight + transform.forward, -Vector3.up, catHeight, blocksLayer);
+        if (hits.Length != catHeight) // the blocks don't span the height of the player
+            return false;
+        if (Physics.Raycast(transform.position + Vector3.up * (catHeight - 1) + transform.forward, Vector3.up, blocksLayer)) // the block structure is taller than player
+            return false;
+        RaycastHit floorBelowCat;
+        Physics.Raycast(transform.position, -Vector3.up, out floorBelowCat);
+        foreach (var hitBlock in hits) // don't push a block if you're also standing on it
+        {
+            if (GameObject.ReferenceEquals(hitBlock.transform.gameObject, floorBelowCat.transform.gameObject))
+                return false;
+        }
+        List<GameObject> directlyPushedBlocksList = new List<GameObject>();
+        foreach (RaycastHit hit in hits) {
+            if (!directlyPushedBlocksList.Contains(hit.transform.parent.gameObject))
+                directlyPushedBlocksList.Add(hit.transform.parent.gameObject);
+        }
+        foreach (GameObject block in directlyPushedBlocksList)
+            Debug.Log("DIRECTLY PUSHED" + block);
+        blockManager.SetAllBlockMovableStateTo(true);
+        List<GameObject> allMovedBlocks = blockManager.GetAllMovableBlocks(directlyPushedBlocksList); // gets all blocks that move given the ones directly pushed
+        foreach (GameObject block in allMovedBlocks)
+            Debug.Log("ALL PUSHED" + block);
+        foreach (GameObject block in allMovedBlocks) // loop through all blocks that must be moved and check if anything is in the way
+        {
+            if (!block.GetComponent<BlockController>().TestDirectBlockPush(transform.forward)) {// something is in the way for this block
+                blockManager.SetAllBlockMovableStateTo(false);
+                return false;
+            }
+        }
+        
+        return true;
+    }
     void FaceDirection(Vector3 direction)
     {
         float angle = Vector3.SignedAngle(transform.forward, direction, Vector3.up);
@@ -104,6 +163,7 @@ public class CatMovement : MonoBehaviour
     void Awake()
     {
         cameraController = FindObjectOfType<CameraController>();
+        blockManager = FindObjectOfType<BlockManager>();
     }
 
     void Start()
