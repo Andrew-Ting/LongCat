@@ -10,8 +10,5 @@ public class GroundManager : MonoBehaviour
 
     public void PopulateBlockManagerCurrentMove(List<GameObject> excludedBlocks) { // has side effect of setting blockcontroller's isPushableThisMove state; should ideally be separated when movement is extended
         CurrentMoveBlockPopulate?.Invoke(excludedBlocks);
-        Debug.Log("COUNT: " + excludedBlocks.Count);
-        foreach (GameObject block in excludedBlocks)
-            Debug.Log(block);
     }
 }

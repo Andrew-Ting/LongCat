@@ -9,6 +9,8 @@ public class CatMovement : MonoBehaviour
     [SerializeField]
     LayerMask blocksLayer = (1 << 7);
     [SerializeField]
+    int blocksLayerNumber = 7;
+    [SerializeField]
     LayerMask objects = (1 << 6 | 1 << 7);
     public event Action<Vector3> CatMoveAction;
     private CameraController cameraController;
@@ -24,7 +26,6 @@ public class CatMovement : MonoBehaviour
         Vector3 newDirection = p % 2 == 0 ? dir * Vector3.forward : dir * Vector3.right;
         FaceDirection(newDirection);
         Vector3 newMoveDirection = newDirection; // this is relative
-        bool willPushSomething = false;
         if (!Physics.Raycast(transform.position + Vector3.up * catHeight + transform.forward, -Vector3.up, catHeight, objects))
         {
             Ray ray = new Ray(transform.position + transform.forward, -Vector3.up);
@@ -100,20 +101,22 @@ public class CatMovement : MonoBehaviour
 
                 if (PushConditionMet()) { 
                     // can be pushed
-                    willPushSomething = true;
+                    GameObject catLandingPositionSameHeight = GetHitObjectAt(transform.position + transform.forward - Vector3.up, objects);
+                    if (NotGoodLandingSpot(catLandingPositionSameHeight)) // if push conditions are met and player does not maintain its height, it must go down
+                        newMoveDirection -= Vector3.up;
+
                 }
-                else
+                else {
                     newMoveDirection = Vector3.zero;
+                    blockManager.SetAllBlockMovableStateTo(false);
+                }
             }
         }
         moveCatVector = newMoveDirection;
-        if (!willPushSomething)
-            ReadyForMovement();
-        Debug.Log(newMoveDirection);
         CatMoveAction?.Invoke(newMoveDirection);
     }
 
-    public void ReadyForMovement() {
+    public void ReadyForMovement() { // called by BlockManager when all blocks have moved to fixed position
         transform.position += moveCatVector;
     }
     public void SetAreBlocksMoving(bool newState) {
@@ -126,33 +129,42 @@ public class CatMovement : MonoBehaviour
             return false;
         if (Physics.Raycast(transform.position + Vector3.up * (catHeight - 1) + transform.forward, Vector3.up, blocksLayer)) // the block structure is taller than player
             return false;
-        RaycastHit floorBelowCat;
-        Physics.Raycast(transform.position, -Vector3.up, out floorBelowCat);
-        foreach (var hitBlock in hits) // don't push a block if you're also standing on it
-        {
-            if (GameObject.ReferenceEquals(hitBlock.transform.gameObject, floorBelowCat.transform.gameObject))
-                return false;
-        }
         List<GameObject> directlyPushedBlocksList = new List<GameObject>();
         foreach (RaycastHit hit in hits) {
             if (!directlyPushedBlocksList.Contains(hit.transform.parent.gameObject))
                 directlyPushedBlocksList.Add(hit.transform.parent.gameObject);
         }
-        foreach (GameObject block in directlyPushedBlocksList)
-            Debug.Log("DIRECTLY PUSHED" + block);
         blockManager.SetAllBlockMovableStateTo(true);
         List<GameObject> allMovedBlocks = blockManager.GetAllMovableBlocks(directlyPushedBlocksList); // gets all blocks that move given the ones directly pushed
-        foreach (GameObject block in allMovedBlocks)
-            Debug.Log("ALL PUSHED" + block);
         foreach (GameObject block in allMovedBlocks) // loop through all blocks that must be moved and check if anything is in the way
         {
             if (!block.GetComponent<BlockController>().TestDirectBlockPush(transform.forward)) {// something is in the way for this block
-                blockManager.SetAllBlockMovableStateTo(false);
                 return false;
             }
         }
-        
+        GameObject floorBelowCat = GetHitObjectAt(transform.position - Vector3.up, objects);
+        // don't push a block if you're also standing on it, or it pushes the block you're standing on
+        if (floorBelowCat.layer == blocksLayerNumber && !blockManager.IsSetAsUnmovableBlock(floorBelowCat.transform.parent.gameObject))
+            return false;
+        GameObject catLandingPositionSameHeight = GetHitObjectAt(transform.position + transform.forward - Vector3.up, objects);
+        GameObject catLandingPositionMoveDown = GetHitObjectAt(transform.position + transform.forward - (Vector3.up * 2), objects);
+        if (NotGoodLandingSpot(catLandingPositionMoveDown) && NotGoodLandingSpot(catLandingPositionSameHeight))
+            return false;
         return true;
+    }
+    GameObject GetHitObjectAt(Vector3 position, LayerMask layerMask) {
+        RaycastHit hitObject;
+        bool hitAnObject = Physics.Raycast(position - Vector3.up, Vector3.up, out hitObject, layerMask);
+        if (!hitAnObject)
+            return null;
+        return hitObject.transform.gameObject;
+    }
+    bool NotGoodLandingSpot(GameObject landPosition) {
+        if (landPosition == null)
+            return true;
+        if (landPosition.layer == blocksLayerNumber && !blockManager.IsSetAsUnmovableBlock(landPosition.transform.parent.gameObject))
+            return true;
+        return false;
     }
     void FaceDirection(Vector3 direction)
     {

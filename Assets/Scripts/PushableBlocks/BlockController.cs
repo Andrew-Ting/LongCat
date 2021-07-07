@@ -50,19 +50,17 @@ public class BlockController : MonoBehaviour
         isPushableThisMove = false;
         SetBlocksOnTopAsUnmovable?.Invoke(excludedBlocks);
     }
-    void BlockPush(Vector3 directionOfMovement) { // cat pushes a piece of the block
+    void BlockPush(Vector3 directionOfMovement) { // cat pushes a piece of the block and moves in this direction
         if (isPushableThisMove) 
             isPushableThisMove = false; // reset isPushable variable       
         else return;
-        transform.position += directionOfMovement;
-        blockManager.BlockFallManagement();
+        transform.position += new Vector3(directionOfMovement.x, 0, directionOfMovement.z); // only move blocks horizontally; vertical movement handled by BlockManager
     }
     public void SetIsPushableTo(bool newState) {
         isPushableThisMove = newState;
     }
-    public void FallAndResetRestingPlatforms() { // drops the block until it lands on a platform/block and sets all its resting platforms
-        foreach (GameObject lowerBlock in restingPlatforms) { 
-            Debug.Log(lowerBlock);      
+    public bool FallAndResetRestingPlatforms() { // drops the block until it lands on a platform/block and sets all its resting platforms
+        foreach (GameObject lowerBlock in restingPlatforms) {      
             lowerBlock.GetComponent<BlockController>().SetBlocksOnTopAsUnmovable -= SendBlockToManagerAndRecurseIfMoved;
         }       
         if (isTouchingGroundThisMove) {
@@ -75,8 +73,6 @@ public class BlockController : MonoBehaviour
             bool landsOnSomething = false;
             foreach (Transform child in transform) {
                 RaycastHit hit;
-                Debug.Log(child.gameObject + " of " + gameObject + "\'s raycast returns " + Physics.Raycast(child.position, -Vector3.up, out hit, 1, groundLayer | blocksLayer));
-                Debug.Log(child.position);
                 if (Physics.Raycast(child.position, -Vector3.up, out hit, 1, groundLayer | blocksLayer)) {
                     GameObject hitObject = hit.transform.gameObject;
                     if (hitObject.layer == groundLayerNumber && !isTouchingGroundThisMove) {
@@ -88,8 +84,6 @@ public class BlockController : MonoBehaviour
                         landsOnSomething = true;
                         restingPlatforms.Add(hitObject.transform.parent.gameObject);
                         hitObject.transform.parent.gameObject.GetComponent<BlockController>().SetBlocksOnTopAsUnmovable += SendBlockToManagerAndRecurseIfMoved;
-                     
-                            Debug.Log(gameObject + "\'s " + child.gameObject + " HIT " + hitObject.transform.parent.gameObject + "\'s " + hitObject);
                         
                     }
                 }
@@ -99,6 +93,9 @@ public class BlockController : MonoBehaviour
             transform.position -= Vector3.up;
             iterations++;
         }
+        if (iterations == 0)
+            return false;
+        return true;
     }
     
 }
