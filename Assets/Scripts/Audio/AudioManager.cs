@@ -39,10 +39,13 @@ public class AudioManager : MonoBehaviour
         {
             if (s.type == SoundType.BGM) //bgm music
             {
-                if (currentBGM != null & currentBGM.name == name)
+                if (currentBGM != null)
                 {
-                    Debug.Log("Already playing " + name);
-                    return;
+                    if(currentBGM.name == name)
+                    {
+                        Debug.Log("Already playing " + name);
+                        return;
+                    }
                 }
                 Stop();
                 //Debug.Log(currentBGM);
