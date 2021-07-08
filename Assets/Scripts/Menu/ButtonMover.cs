@@ -3,14 +3,15 @@ using UnityEngine.EventSystems;
 
 public class ButtonMover : MonoBehaviour, IPointerDownHandler
 {
-    public Vector3 CameraPos;
+    public DataClass.MenuCameraViews cameraView;
     public GameObject Open;
     
     MenuCamera menuCamera;
+    MenuManager menuManager;
 
     public void OnPointerDown(PointerEventData eventData)
     {
-        menuCamera.MoveCamera(CameraPos);
+        menuCamera.MoveCamera(menuManager.cameraViews[(int)cameraView]);
         if(Open != null)
         {
             transform.parent.gameObject.SetActive(false);
@@ -24,6 +25,7 @@ public class ButtonMover : MonoBehaviour, IPointerDownHandler
 
     void Start()
     {
-        menuCamera = GameObject.FindGameObjectWithTag("MainCamera").GetComponent<MenuCamera>();
+        menuCamera = FindObjectOfType<MenuCamera>();
+        menuManager = FindObjectOfType<MenuManager>();
     }
 }
