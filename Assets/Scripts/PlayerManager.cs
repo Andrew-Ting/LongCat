@@ -5,6 +5,7 @@ public class PlayerManager : MonoBehaviour
     private static PlayerManager instance;
     private LevelCollection levelCollection;
 
+    //all data
     private bool[] unlockedWorlds;
     private bool[] unlockedID;
 
@@ -35,6 +36,14 @@ public class PlayerManager : MonoBehaviour
     public bool IsUnlockedID(int n)
     {
         return unlockedID[n];
+    }
+    public bool[] GetWorlds()
+    {
+        return unlockedWorlds;
+    }
+    public bool[] GetIDs()
+    {
+        return unlockedID;
     }
 
     //unlocking stuff
