@@ -32,37 +32,18 @@ public class AudioManager : MonoBehaviour
         }
     }
 
-    /*    public void Play(string name)
-        {
-            Sound s = Array.Find(sounds, sound => sound.name == name);
-            if (s != null)
-            {
-                s.source.volume = PlayerPrefs.GetFloat(s.type.ToString(), 1f);
-                s.source.Play();
-                if (s.type == SoundType.BGM) //bgm music
-                    currentBGM = s;
-            }
-            else
-            {
-                Debug.LogWarning("error in audio. tried playing " + name);
-            }
-        }*/
-
     public void Play(string name)
     {
-        if (currentBGM != null)
-        {
-            if (currentBGM.name == name)
-            {
-                Debug.Log("Already playing " + name);
-                return;
-            }
-        }
         Sound s = Array.Find(sounds, sound => sound.name == name);
         if (s != null)
         {
             if (s.type == SoundType.BGM) //bgm music
             {
+                if (currentBGM != null & currentBGM.name == name)
+                {
+                    Debug.Log("Already playing " + name);
+                    return;
+                }
                 Stop();
                 //Debug.Log(currentBGM);
                 currentBGM = s;
@@ -116,7 +97,7 @@ public class AudioManager : MonoBehaviour
         currentBGM.source.volume = PlayerPrefs.GetFloat("BGM", 1f);
     }
 
-    IEnumerator PlayTemp(string name)
+    IEnumerator PlayTemp(string name) // only for SFX
     {
         Sound s = Array.Find(sounds, sound => sound.name == name);
         if (s != null)
@@ -130,7 +111,6 @@ public class AudioManager : MonoBehaviour
                     s.source.Play();
                     while (s.source.isPlaying)
                     {
-                        //Debug.Log("playing");
                         yield return null;
                     }
                     StartCoroutine(slowPlay(0.3f));
@@ -177,7 +157,7 @@ public class AudioManager : MonoBehaviour
         }
         else
         {
-            Debug.Log("nothing to play");
+            Debug.Log("nothing to slow play");
         }
         yield return null;
     }
