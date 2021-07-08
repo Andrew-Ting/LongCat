@@ -7,6 +7,7 @@ public class MenuManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        FindObjectOfType<AudioManager>().Play("TestBGM");
         foreach(Transform child in transform)
         {
             child.transform.gameObject.SetActive(false);

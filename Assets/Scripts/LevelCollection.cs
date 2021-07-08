@@ -7,7 +7,7 @@ public class LevelCollection : MonoBehaviour
     public int worlds;
     public Dictionary<int, List<LevelData>> levelDataSorted;
 
-    static LevelCollection instance;
+    private static LevelCollection instance;
 
     void Awake()
     {
