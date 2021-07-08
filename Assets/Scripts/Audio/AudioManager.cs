@@ -1,7 +1,15 @@
-using UnityEngine.Audio;
 using System;
 using UnityEngine;
 using System.Collections;
+
+/*usage
+ * Play(string name)
+ * Stop()
+ * Mute()
+ * Unmute()
+ * TransitionBGM(string name, float timeChange)
+ * PlayTemporary(string name)
+*/
 
 public class AudioManager : MonoBehaviour
 {
@@ -48,7 +56,6 @@ public class AudioManager : MonoBehaviour
                     }
                 }
                 Stop();
-                //Debug.Log(currentBGM);
                 currentBGM = s;
             }
             s.source.volume = PlayerPrefs.GetFloat(s.type.ToString(), 1f);

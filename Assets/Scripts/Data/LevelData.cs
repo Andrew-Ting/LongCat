@@ -15,4 +15,9 @@ public class LevelData : ScriptableObject
     [Header("Level inside")]
     public Vector3 catStartingPos;
     public int catStartingHeight;
+
+    public string GetWorldLevelString()
+    {
+        return worldNumber + " - " + level;
+    }
 }

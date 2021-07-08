@@ -20,12 +20,18 @@ public class PlayerManager : MonoBehaviour
         DontDestroyOnLoad(instance.gameObject);
 
         levelCollection = FindObjectOfType<LevelCollection>();
-        //load stuff
 
         unlockedWorlds = new bool[levelCollection.worlds];
         unlockedID = new bool[levelCollection.levelDataCollection.Length];
 
-        //use array.CopyTo(<old array>, 0)
+        //load stuff
+        PlayerData data = SaveLoadManager.LoadPlayer();
+        if(data != null)
+        {
+            //existing player
+            data.worlds.CopyTo(unlockedWorlds, 0);
+            data.id.CopyTo(unlockedID, 0);
+        }
     }
 
     //Getting stuff

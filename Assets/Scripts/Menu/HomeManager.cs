@@ -6,7 +6,6 @@ public class HomeManager : MonoBehaviour
     public Transform playContinueButton;
     LevelData LevelDataCurrentlyHold;
     LevelCollection levelCollection;
-    // Start is called before the first frame update
     void Start()
     {
         levelCollection = FindObjectOfType<LevelCollection>();
@@ -15,7 +14,7 @@ public class HomeManager : MonoBehaviour
         {
             //continue last game
             LevelDataCurrentlyHold = levelCollection.levelDataCollection[gameData.puzzleID];
-            playContinueButton.Find("Text").GetComponent<Text>().text = "Continue\n" + LevelDataCurrentlyHold.worldNumber.ToString() + " - " + LevelDataCurrentlyHold.level.ToString();
+            playContinueButton.Find("Text").GetComponent<Text>().text = "Continue\n" + LevelDataCurrentlyHold.GetWorldLevelString();
         }
         else
         {
@@ -26,8 +25,6 @@ public class HomeManager : MonoBehaviour
 
     public void ContinueGame()
     {
-        //should be level loader manager
-        //FindObjectOfType<LevelLoader>().LoadGame(LevelDataCurrentlyHold.id);
         LevelLoader.LoadGame(LevelDataCurrentlyHold.id);
     }
 }
