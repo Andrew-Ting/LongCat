@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using System;
 
@@ -8,8 +6,11 @@ using System;
 public class LevelData : ScriptableObject
 {
     [Header("Level Detail")]
+    [Tooltip("starts at 0")]
     public int id;
+    [Tooltip("starts at 0")]
     public int worldNumber;
+    [Tooltip("starts at 1")]
     public int level;
     [Header("Level inside")]
     public Vector3 catStartingPos;
