@@ -16,4 +16,11 @@ public class DataClass
         East = 1,
         West = 3
     }
+     // direction camera is facing in game
+    public enum BlockState
+    {
+        HasNotFallen,
+        HasFallen,
+        ToBeDeleted
+    }
 }
