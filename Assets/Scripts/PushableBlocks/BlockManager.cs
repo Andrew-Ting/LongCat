@@ -48,10 +48,11 @@ public class BlockManager : MonoBehaviour
             }
             if (!hasChange) // break early when no more blocks are moving
                 break;
-        }
-        foreach (GameObject block in toBeDeletedBlocks) {
-            block.GetComponent<BlockController>().SelfDestruct();
-            blocks.Remove(block);
+            foreach (GameObject block in toBeDeletedBlocks) { // delete all blocks labelled as TobeDeleted
+                block.GetComponent<BlockController>().SelfDestruct();
+                blocks.Remove(block);
+            }
+            toBeDeletedBlocks.Clear();
         }
         catMovement.SetAreBlocksMoving(false);
     }
