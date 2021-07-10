@@ -10,10 +10,8 @@ public class ButtonWorldMapLevelSelect : MonoBehaviour, IPointerClickHandler
     public GameObject lockGui;
     public Text levelNumberText;
 
-
     private PlayerManager playerManager;
-    private bool locked = false;
-    //private LevelLoader levelLoader;
+    private bool locked;
 
     public void OnPointerClick(PointerEventData eventData)
     {
@@ -31,6 +29,7 @@ public class ButtonWorldMapLevelSelect : MonoBehaviour, IPointerClickHandler
     void Start()
     {
         playerManager = FindObjectOfType<PlayerManager>();
+
         locked = !playerManager.IsUnlockedID(level.id);
         lockGui.SetActive(locked);
         levelNumberText.text = level.level.ToString();

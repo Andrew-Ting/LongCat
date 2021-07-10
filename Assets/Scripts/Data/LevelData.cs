@@ -6,9 +6,9 @@ using System;
 public class LevelData : ScriptableObject
 {
     [Header("Level Detail")]
-    [Tooltip("starts at 0")]
+    [HideInInspector]
     public int id;
-    [Tooltip("starts at 0")]
+    [Tooltip("starts at 1")]
     public int worldNumber;
     [Tooltip("starts at 1")]
     public int level;

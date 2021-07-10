@@ -29,9 +29,27 @@ public class PlayerManager : MonoBehaviour
         if(data != null)
         {
             //existing player
-            data.worlds.CopyTo(unlockedWorlds, 0);
-            data.id.CopyTo(unlockedID, 0);
+            SetData(data);
         }
+
+        //for testing purposes only
+        if(Application.isEditor)
+        {
+            for(int i = 0; i < unlockedWorlds.Length; i++)
+            {
+                UnlockWorld(i);
+            }
+            for (int i = 0; i < unlockedID.Length; i++)
+            {
+                UnlockID(i);
+            }
+        }
+    }
+
+    private void SetData(PlayerData data) //only done when 
+    {
+        data.worlds.CopyTo(unlockedWorlds, 0);
+        data.id.CopyTo(unlockedID, 0);
     }
 
     //Getting stuff

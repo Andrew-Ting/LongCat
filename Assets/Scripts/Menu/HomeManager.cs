@@ -3,11 +3,12 @@ using UnityEngine.UI;
 
 public class HomeManager : MonoBehaviour
 {
-    public Transform playContinueButton;
+    Transform playContinueButton;
     LevelData LevelDataCurrentlyHold;
     LevelCollection levelCollection;
     void Start()
     {
+        playContinueButton = transform.Find("Play");
         levelCollection = FindObjectOfType<LevelCollection>();
         GameData gameData = SaveLoadManager.LoadGameData();
         if(gameData != null)
