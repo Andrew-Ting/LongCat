@@ -19,7 +19,7 @@ public class CatMovement : MonoBehaviour
     private BlockManager blockManager;
     private Vector3 moveCatVector; // direction cat will move once it is ready for movement
     private bool areBlocksMoving = false;
-    private Dictionary<DataClass.PowerUp, ItemCountController> itemCountController; // if we have more special items, this should be an array
+    private Dictionary<DataClass.PowerUp, ItemCountController> itemCountController;
     public void MoveCat(DataClass.Directions dirIndex)
     {
         if (areBlocksMoving) // you don't want the cat to be able to move as blocks are falling; opens a can of worms in logic
