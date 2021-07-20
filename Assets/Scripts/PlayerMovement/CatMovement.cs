@@ -9,6 +9,8 @@ public class CatMovement : MonoBehaviour
     [SerializeField]
     LayerMask blocksLayer = (1 << 7);
     [SerializeField]
+    LayerMask powerupLayer = (1 << 8);
+    [SerializeField]
     int blocksLayerNumber = 7;
     [SerializeField]
     LayerMask objects = (1 << 6 | 1 << 7);
@@ -17,6 +19,7 @@ public class CatMovement : MonoBehaviour
     private BlockManager blockManager;
     private Vector3 moveCatVector; // direction cat will move once it is ready for movement
     private bool areBlocksMoving = false;
+    private Dictionary<DataClass.PowerUp, ItemCountController> itemCountController; // if we have more special items, this should be an array
     public void MoveCat(DataClass.Directions dirIndex)
     {
         if (areBlocksMoving) // you don't want the cat to be able to move as blocks are falling; opens a can of worms in logic
@@ -117,6 +120,7 @@ public class CatMovement : MonoBehaviour
     }
 
     public void ReadyForMovement() { // called by BlockManager when all blocks have moved to fixed position
+        CollectAllBerriesAlong(moveCatVector);
         transform.position += moveCatVector;
     }
     public void SetAreBlocksMoving(bool newState) {
@@ -166,20 +170,67 @@ public class CatMovement : MonoBehaviour
             return true;
         return false;
     }
+    void CollectAllBerriesAlong(Vector3 catMovementDirection) { // takes in the delta vector of the cat movement and collects all berries along that movement
+        for (int pos = 0; pos < Mathf.Abs(catMovementDirection.x); pos++) { // collect all powerups along the x offset
+            int posWithDirection = pos * (catMovementDirection.x > 0 ? 1 : -1);
+            RaycastHit hitPowerup;
+            if (Physics.Raycast(transform.position + Vector3.up * (catMovementDirection.y + 1) + Vector3.right * (posWithDirection), -Vector3.up, out hitPowerup, 1, powerupLayer)) {
+                Debug.Log(hitPowerup.transform.gameObject.GetComponent<ItemData>().GetPowerupType());
+                Debug.Log(hitPowerup.transform.gameObject.GetComponent<ItemData>());
+                itemCountController[hitPowerup.transform.gameObject.GetComponent<ItemData>().GetPowerupType()].AddCountOfItem();
+                Destroy(hitPowerup.transform.gameObject);
+            }
+        }
+        for (int pos = 0; pos < Mathf.Abs(catMovementDirection.z); pos++) { // collect all powerups along the z offset
+            int posWithDirection = pos * (catMovementDirection.z > 0 ? 1 : -1);
+            RaycastHit hitPowerup;
+            if (Physics.Raycast(transform.position + Vector3.up * (catMovementDirection.y + 1) + Vector3.forward * posWithDirection, -Vector3.up, out hitPowerup, 1, powerupLayer)) {
+                Debug.Log(hitPowerup.transform.gameObject.GetComponent<ItemData>().GetPowerupType());
+                Debug.Log(hitPowerup.transform.gameObject.GetComponent<ItemData>());
+                itemCountController[hitPowerup.transform.gameObject.GetComponent<ItemData>().GetPowerupType()].AddCountOfItem();
+                Destroy(hitPowerup.transform.gameObject);
+            }
+        }
+        for (int pos = 0; pos < catHeight; pos++) { // collect all powerups along the vertical axis the cat will stand at
+            RaycastHit hitPowerup;
+            Debug.Log(transform.position + catMovementDirection + Vector3.up * (pos - 1));
+            if (Physics.Raycast(transform.position + catMovementDirection + Vector3.up * (pos - 1), Vector3.up, out hitPowerup, 1, powerupLayer)) {
+                Debug.Log(hitPowerup.transform.gameObject.GetComponent<ItemData>().GetPowerupType());
+                Debug.Log(hitPowerup.transform.gameObject.GetComponent<ItemData>());
+                itemCountController[hitPowerup.transform.gameObject.GetComponent<ItemData>().GetPowerupType()].AddCountOfItem();
+                Destroy(hitPowerup.transform.gameObject);
+            }
+        }
+    }
     void FaceDirection(Vector3 direction)
     {
         float angle = Vector3.SignedAngle(transform.forward, direction, Vector3.up);
         transform.Rotate(Vector3.up, angle);
     }
-
+    public void AttemptGrowth() {
+        if (Physics.Raycast(transform.position + ((catHeight - 1) * Vector3.up), Vector3.up, 1, objects)) {
+            Debug.Log("Cannot grow at current position");
+            return;
+        }
+        bool growthSuccess = itemCountController[DataClass.PowerUp.Grow].AttemptDeductCountOfItem();
+        if (growthSuccess)
+            catHeight++;
+    }
+    public void AttemptShrink() {
+        bool shrinkSuccess = itemCountController[DataClass.PowerUp.Shrink].AttemptDeductCountOfItem();
+        if (shrinkSuccess)
+            catHeight--;
+    }
     void Awake()
     {
         cameraController = FindObjectOfType<CameraController>();
         blockManager = FindObjectOfType<BlockManager>();
-    }
-
-    void Start()
-    {
-
+        var powerupTypes = FindObjectsOfType<ItemCountController>(); 
+        itemCountController = new Dictionary<DataClass.PowerUp, ItemCountController>();
+        for (int i = 0; i < powerupTypes.Length; i++) {
+            ItemCountController currentUICount = powerupTypes[i];
+            Debug.Log(currentUICount.GetPowerupType());
+            itemCountController[currentUICount.GetPowerupType()] = currentUICount;
+        }
     }
 }
