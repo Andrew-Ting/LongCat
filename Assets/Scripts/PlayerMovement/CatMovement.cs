@@ -175,9 +175,7 @@ public class CatMovement : MonoBehaviour
             int posWithDirection = pos * (catMovementDirection.x > 0 ? 1 : -1);
             RaycastHit hitPowerup;
             if (Physics.Raycast(transform.position + Vector3.up * (catMovementDirection.y + 1) + Vector3.right * (posWithDirection), -Vector3.up, out hitPowerup, 1, powerupLayer)) {
-                Debug.Log(hitPowerup.transform.gameObject.GetComponent<ItemData>().GetPowerupType());
-                Debug.Log(hitPowerup.transform.gameObject.GetComponent<ItemData>());
-                itemCountController[hitPowerup.transform.gameObject.GetComponent<ItemData>().GetPowerupType()].AddCountOfItem();
+                itemCountController[hitPowerup.transform.gameObject.GetComponent<PowerupData>().GetPowerupType()].AddCountOfItem();
                 Destroy(hitPowerup.transform.gameObject);
             }
         }
@@ -185,19 +183,14 @@ public class CatMovement : MonoBehaviour
             int posWithDirection = pos * (catMovementDirection.z > 0 ? 1 : -1);
             RaycastHit hitPowerup;
             if (Physics.Raycast(transform.position + Vector3.up * (catMovementDirection.y + 1) + Vector3.forward * posWithDirection, -Vector3.up, out hitPowerup, 1, powerupLayer)) {
-                Debug.Log(hitPowerup.transform.gameObject.GetComponent<ItemData>().GetPowerupType());
-                Debug.Log(hitPowerup.transform.gameObject.GetComponent<ItemData>());
-                itemCountController[hitPowerup.transform.gameObject.GetComponent<ItemData>().GetPowerupType()].AddCountOfItem();
+                itemCountController[hitPowerup.transform.gameObject.GetComponent<PowerupData>().GetPowerupType()].AddCountOfItem();
                 Destroy(hitPowerup.transform.gameObject);
             }
         }
         for (int pos = 0; pos < catHeight; pos++) { // collect all powerups along the vertical axis the cat will stand at
             RaycastHit hitPowerup;
-            Debug.Log(transform.position + catMovementDirection + Vector3.up * (pos - 1));
             if (Physics.Raycast(transform.position + catMovementDirection + Vector3.up * (pos - 1), Vector3.up, out hitPowerup, 1, powerupLayer)) {
-                Debug.Log(hitPowerup.transform.gameObject.GetComponent<ItemData>().GetPowerupType());
-                Debug.Log(hitPowerup.transform.gameObject.GetComponent<ItemData>());
-                itemCountController[hitPowerup.transform.gameObject.GetComponent<ItemData>().GetPowerupType()].AddCountOfItem();
+                itemCountController[hitPowerup.transform.gameObject.GetComponent<PowerupData>().GetPowerupType()].AddCountOfItem();
                 Destroy(hitPowerup.transform.gameObject);
             }
         }
@@ -229,7 +222,6 @@ public class CatMovement : MonoBehaviour
         itemCountController = new Dictionary<DataClass.PowerUp, ItemCountController>();
         for (int i = 0; i < powerupTypes.Length; i++) {
             ItemCountController currentUICount = powerupTypes[i];
-            Debug.Log(currentUICount.GetPowerupType());
             itemCountController[currentUICount.GetPowerupType()] = currentUICount;
         }
     }
