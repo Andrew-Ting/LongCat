@@ -23,4 +23,9 @@ public class DataClass
         HasFallen,
         ToBeDeleted
     }
+    public enum PowerUp
+    {
+        Grow,
+        Shrink
+    }
 }
