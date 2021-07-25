@@ -19,43 +19,20 @@ public class LevelCollection : MonoBehaviour
         instance = this;
         DontDestroyOnLoad(instance.gameObject);
 
-        if (LevelChecker())
+        for(int i = 0; i < levelDataCollection.Length; i++)
         {
-            levelDataSorted = new Dictionary<int, List<LevelData>>();
-            for(int i = 0; i < levelDataCollection.Length; i++)
-            {
-                if(!levelDataSorted.ContainsKey(levelDataCollection[i].worldNumber))
-                {
-                    levelDataSorted.Add(levelDataCollection[i].worldNumber, new List<LevelData>());
-                }
-                levelDataSorted[levelDataCollection[i].worldNumber].Add(levelDataCollection[i]);
-            }
+            levelDataCollection[i].id = i;
         }
-    }
 
-    bool LevelChecker()
-    {
-        bool [] levelArray = new bool[levelDataCollection.Length];
-        for (int i = 0; i < levelDataCollection.Length; i++)
+        levelDataSorted = new Dictionary<int, List<LevelData>>();
+        for(int i = 0; i < levelDataCollection.Length; i++)
         {
-            if (levelDataCollection[i].id < levelDataCollection.Length)
+            if(!levelDataSorted.ContainsKey(levelDataCollection[i].worldNumber))
             {
-                if (!levelArray[levelDataCollection[i].id])
-                {
-                    levelArray[i] = true;
-                }
-                else
-                {
-                    Debug.Log("checker failed: repeat id @ " + i);
-                    return false;
-                }
+                levelDataSorted.Add(levelDataCollection[i].worldNumber, new List<LevelData>());
             }
-            else
-            {
-                Debug.Log("checker failed: id is greater");
-                return false;
-            }
+            levelDataSorted[levelDataCollection[i].worldNumber].Add(levelDataCollection[i]);
         }
-        return true;
+        
     }
 }

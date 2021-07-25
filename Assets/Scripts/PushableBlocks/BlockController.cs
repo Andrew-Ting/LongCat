@@ -8,6 +8,8 @@ public class BlockController : MonoBehaviour
     public event Action<List<GameObject>> SetBlocksOnTopAsUnmovable;
     private CatMovement catMovement;
     [SerializeField]
+    private int blockMaxFallHeight = 30; // if the block falls further than this, it is assumed to have fallen off the world and is deleted
+    [SerializeField]
     LayerMask groundLayer = (1 << 6);
     [SerializeField]
     LayerMask blocksLayer = (1 << 7);
@@ -59,7 +61,8 @@ public class BlockController : MonoBehaviour
     public void SetIsPushableTo(bool newState) {
         isPushableThisMove = newState;
     }
-    public bool FallAndResetRestingPlatforms() { // drops the block until it lands on a platform/block and sets all its resting platforms
+    public DataClass.BlockState FallAndResetRestingPlatforms() { // drops the block until it lands on a platform/block and sets all its resting platforms
+        // returns whether the block has fallen or not in this function call. If it falls far enough, it is returned with a mark for deletion (deleted in BlockManager)
         foreach (GameObject lowerBlock in restingPlatforms) {      
             lowerBlock.GetComponent<BlockController>().SetBlocksOnTopAsUnmovable -= SendBlockToManagerAndRecurseIfMoved;
         }       
@@ -68,8 +71,8 @@ public class BlockController : MonoBehaviour
             groundManager.CurrentMoveBlockPopulate -= SendBlockToManagerAndRecurseIfMoved;
         }
         restingPlatforms.Clear();
-        int iterations = 0; // just to prevent infinite loops when block pushed off to abyss
-        while (iterations < 10) {
+        int unitsOfFalling = 0; 
+        while (unitsOfFalling < blockMaxFallHeight) {
             bool landsOnSomething = false;
             foreach (Transform child in transform) {
                 RaycastHit hit;
@@ -91,11 +94,15 @@ public class BlockController : MonoBehaviour
             if (landsOnSomething)
                 break;
             transform.position -= Vector3.up;
-            iterations++;
+            unitsOfFalling++;
         }
-        if (iterations == 0)
-            return false;
-        return true;
+        if (unitsOfFalling == 0)
+            return DataClass.BlockState.HasNotFallen;
+        if (unitsOfFalling == blockMaxFallHeight)
+            return DataClass.BlockState.ToBeDeleted;
+        return DataClass.BlockState.HasFallen;
     }
-    
+    public void SelfDestruct() {
+        Destroy(gameObject);
+    }
 }

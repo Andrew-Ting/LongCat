@@ -34,14 +34,25 @@ public class BlockManager : MonoBehaviour
     private IEnumerator BlockFallSimulation() {
         catMovement.SetAreBlocksMoving(true);
         yield return new WaitForFixedUpdate(); // gives a frame for block colliders to move horizontally
+        List <GameObject> toBeDeletedBlocks = new List<GameObject>();
         for (int i = 0; i < maxBlockStackHeight; i++) {
             bool hasChange = false;
             foreach (GameObject block in blocks) { // a possible optimization is only considering movableBlocks, but introduces strong function coupling
-                hasChange = hasChange || block.GetComponent<BlockController>().FallAndResetRestingPlatforms();
-                yield return new WaitForFixedUpdate();
+                DataClass.BlockState blockState = block.GetComponent<BlockController>().FallAndResetRestingPlatforms(); // if you get a null reference exception in this line, you forgot to put a blockcontroller object on a block
+                if (blockState != DataClass.BlockState.HasNotFallen) {
+                    hasChange = true;
+                    yield return new WaitForFixedUpdate();
+                }
+                if (blockState == DataClass.BlockState.ToBeDeleted)
+                    toBeDeletedBlocks.Add(block);
             }
             if (!hasChange) // break early when no more blocks are moving
                 break;
+            foreach (GameObject block in toBeDeletedBlocks) { // delete all blocks labelled as TobeDeleted
+                block.GetComponent<BlockController>().SelfDestruct();
+                blocks.Remove(block);
+            }
+            toBeDeletedBlocks.Clear();
         }
         catMovement.SetAreBlocksMoving(false);
     }
