@@ -175,23 +175,23 @@ public class CatMovement : MonoBehaviour
             int posWithDirection = pos * (catMovementDirection.x > 0 ? 1 : -1);
             RaycastHit hitPowerup;
             if (Physics.Raycast(transform.position + Vector3.up * (catMovementDirection.y + 1) + Vector3.right * (posWithDirection), -Vector3.up, out hitPowerup, 1, powerupLayer)) {
-                itemCountController[hitPowerup.transform.gameObject.GetComponent<PowerupData>().GetPowerupType()].AddCountOfItem();
-                Destroy(hitPowerup.transform.gameObject);
+                itemCountController[hitPowerup.transform.gameObject.GetComponent<PowerupController>().GetPowerupType()].AddCountOfItem();
+                hitPowerup.transform.gameObject.GetComponent<PowerupController>().SelfDestruct();
             }
         }
         for (int pos = 0; pos < Mathf.Abs(catMovementDirection.z); pos++) { // collect all powerups along the z offset
             int posWithDirection = pos * (catMovementDirection.z > 0 ? 1 : -1);
             RaycastHit hitPowerup;
             if (Physics.Raycast(transform.position + Vector3.up * (catMovementDirection.y + 1) + Vector3.forward * posWithDirection, -Vector3.up, out hitPowerup, 1, powerupLayer)) {
-                itemCountController[hitPowerup.transform.gameObject.GetComponent<PowerupData>().GetPowerupType()].AddCountOfItem();
-                Destroy(hitPowerup.transform.gameObject);
+                itemCountController[hitPowerup.transform.gameObject.GetComponent<PowerupController>().GetPowerupType()].AddCountOfItem();
+                hitPowerup.transform.gameObject.GetComponent<PowerupController>().SelfDestruct();
             }
         }
         for (int pos = 0; pos < catHeight; pos++) { // collect all powerups along the vertical axis the cat will stand at
             RaycastHit hitPowerup;
             if (Physics.Raycast(transform.position + catMovementDirection + Vector3.up * (pos - 1), Vector3.up, out hitPowerup, 1, powerupLayer)) {
-                itemCountController[hitPowerup.transform.gameObject.GetComponent<PowerupData>().GetPowerupType()].AddCountOfItem();
-                Destroy(hitPowerup.transform.gameObject);
+                itemCountController[hitPowerup.transform.gameObject.GetComponent<PowerupController>().GetPowerupType()].AddCountOfItem();
+                hitPowerup.transform.gameObject.GetComponent<PowerupController>().SelfDestruct();
             }
         }
     }
