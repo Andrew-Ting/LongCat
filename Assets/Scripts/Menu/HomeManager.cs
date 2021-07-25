@@ -15,7 +15,7 @@ public class HomeManager : MonoBehaviour
         {
             //continue last game
             LevelDataCurrentlyHold = levelCollection.levelDataCollection[gameData.puzzleID];
-            playContinueButton.Find("Text").GetComponent<Text>().text = "Continue\n" + LevelDataCurrentlyHold.GetWorldLevelString();
+            playContinueButton.Find("Text").GetComponent<Text>().text = "Continue\n" + LevelDataCurrentlyHold.GetWorldLevelString(true, true);
         }
         else
         {

@@ -46,7 +46,7 @@ public class PlayerManager : MonoBehaviour
         }
     }
 
-    private void SetData(PlayerData data) //only done when 
+    private void SetData(PlayerData data) //only done when data exists
     {
         data.worlds.CopyTo(unlockedWorlds, 0);
         data.id.CopyTo(unlockedID, 0);
@@ -71,7 +71,7 @@ public class PlayerManager : MonoBehaviour
     }
 
     //unlocking stuff
-    public void UnlockWorld(int n)
+    public void UnlockWorld(int n) // n is world number
     {
         if(!unlockedWorlds[n]) // if not yet unlocked
         {

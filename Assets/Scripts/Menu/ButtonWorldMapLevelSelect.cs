@@ -32,6 +32,6 @@ public class ButtonWorldMapLevelSelect : MonoBehaviour, IPointerClickHandler
 
         locked = !playerManager.IsUnlockedID(level.id);
         lockGui.SetActive(locked);
-        levelNumberText.text = level.level.ToString();
+        levelNumberText.text = level.levelNumber.ToString();
     }
 }
