@@ -1,17 +1,15 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
-    public GameObject cat;
+    [SerializeField] GameObject cat;
 
     LevelCollection levelCollection;
     // Start is called before the first frame update
     private void Awake()
     {
-        cat.gameObject.SetActive(false);
+        cat.SetActive(false);
     }
 
     void Start()
@@ -29,7 +27,7 @@ public class GameManager : MonoBehaviour
             Debug.Log(gameData.puzzleID);
             SceneManager.LoadScene(gameData.puzzleID + 2, LoadSceneMode.Additive);
             cat.transform.position = levelCollection.levelDataCollection[gameData.puzzleID].catStartingPos;
-            cat.gameObject.SetActive(true);
+            cat.SetActive(true);
         }
     }
 }
