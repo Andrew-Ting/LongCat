@@ -34,7 +34,7 @@ public class LevelCollection : MonoBehaviour
             levelDataSorted[levelDataCollection[i].worldNumber].Add(levelDataCollection[i]);
         }
     }
-    public int nextLevelID(int currentID)
+    public int GetNextLevelID(int currentID)
     {
         LevelData currentLevel = levelDataCollection[currentID];
         if (currentLevel.levelNumber == levelDataSorted[currentLevel.worldNumber - 1].Count)
@@ -54,7 +54,6 @@ public class LevelCollection : MonoBehaviour
         else
         {
             return levelDataSorted[currentLevel.worldNumber][levelDataSorted[currentLevel.worldNumber].IndexOf(currentLevel) + 1].id;
-        }
-        
+        } 
     }
 }
