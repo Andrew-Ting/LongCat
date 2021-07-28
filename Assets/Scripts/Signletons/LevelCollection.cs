@@ -11,14 +11,6 @@ public class LevelCollection : MonoBehaviour
 
     void Awake()
     {
-        if (instance != null)
-        {
-            Destroy(gameObject);
-            return;
-        }
-        instance = this;
-        DontDestroyOnLoad(instance.gameObject);
-
         for(int i = 0; i < levelDataCollection.Length; i++)
         {
             levelDataCollection[i].id = i;
