@@ -8,6 +8,8 @@ public class ButtonWorldMapLevelSelect : MonoBehaviour, IPointerClickHandler
     public LevelData level;
     [Header("References")]
     public GameObject lockGui;
+    public GameObject finishedGui;
+    public GameObject fishedGui;
     public Text levelNumberText;
 
     private PlayerManager playerManager;
@@ -32,6 +34,11 @@ public class ButtonWorldMapLevelSelect : MonoBehaviour, IPointerClickHandler
 
         locked = !playerManager.IsUnlockedID(level.id);
         lockGui.SetActive(locked);
+        if(!locked)
+        {
+            //finishedGui.SetActive(playerManager.IsFinished(level.id));
+            //fishedGui.SetActive(playerManager.IsFished(level.id));
+        }
         levelNumberText.text = level.levelNumber.ToString();
     }
 }

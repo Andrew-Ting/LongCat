@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections.Generic;
 
 public class PlayerManager : MonoBehaviour
 {
@@ -7,7 +8,7 @@ public class PlayerManager : MonoBehaviour
 
     //all data
     private bool[] unlockedWorlds;
-    private bool[] unlockedID;
+    private Dictionary<int, Level> unlockedID;
 
     public void Awake()
     {
@@ -22,8 +23,7 @@ public class PlayerManager : MonoBehaviour
         levelCollection = FindObjectOfType<LevelCollection>();
 
         unlockedWorlds = new bool[levelCollection.worlds];
-        unlockedID = new bool[levelCollection.levelDataCollection.Length];
-
+        unlockedID = new Dictionary<int, Level>();
         //load stuff
         PlayerData data = SaveLoadManager.LoadPlayer();
         if(data != null)
@@ -35,11 +35,11 @@ public class PlayerManager : MonoBehaviour
         //for testing purposes only
         if(Application.isEditor)
         {
-            for(int i = 0; i < unlockedWorlds.Length; i++)
+            for (int i = 0; i < unlockedWorlds.Length; i++)
             {
                 UnlockWorld(i);
             }
-            for (int i = 0; i < unlockedID.Length; i++)
+            for (int i = 0; i < levelCollection.levelDataCollection.Length; i++)
             {
                 UnlockID(i);
             }
@@ -49,7 +49,7 @@ public class PlayerManager : MonoBehaviour
     private void SetData(PlayerData data) //only done when data exists
     {
         data.worlds.CopyTo(unlockedWorlds, 0);
-        data.id.CopyTo(unlockedID, 0);
+        unlockedID = data.ids;
     }
 
     //Getting stuff
@@ -59,13 +59,23 @@ public class PlayerManager : MonoBehaviour
     }
     public bool IsUnlockedID(int n)
     {
-        return unlockedID[n];
+        return unlockedID.ContainsKey(n);
+    }
+    public bool IsFinished(int n)
+    {
+        if (unlockedID.ContainsKey(n)) return unlockedID[n].finished;
+        return false;
+    }
+    public bool IsFished(int n)
+    {
+        if (unlockedID.ContainsKey(n)) return unlockedID[n].fished;
+        return false;
     }
     public bool[] GetWorlds()
     {
         return unlockedWorlds;
     }
-    public bool[] GetIDs()
+    public Dictionary<int, Level> GetIDs()
     {
         return unlockedID;
     }
@@ -84,13 +94,16 @@ public class PlayerManager : MonoBehaviour
     }
     public void UnlockID(int n)
     {
-        if (!unlockedID[n]) // if not yet unlocked
+        if (!unlockedID.ContainsKey(n)) // if not yet unlocked
         {
-            unlockedID[n] = true;
+            unlockedID.Add(n, new Level(n));
         }
         else
         {
             Debug.Log("ID already unlocked??");
         }
     }
+
+    
+    
 }
