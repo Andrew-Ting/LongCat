@@ -1,5 +1,6 @@
 using UnityEngine;
 using System;
+using UnityEngine.SceneManagement;
 
 [CreateAssetMenu(fileName = "Level", menuName = "Level Template")]
 [Serializable]
@@ -12,6 +13,7 @@ public class LevelData : ScriptableObject
     public int worldNumber;
     [Tooltip("starts at 0")]
     public int levelNumber;
+
     [Header("Level inside")]
     public Vector3 catStartingPos;
     public int catStartingHeight;
@@ -26,5 +28,11 @@ public class LevelData : ScriptableObject
             return (levelNumber + 1).ToString();
         else
             return "-1";
+    }
+    // Assets/Scenes/Levels/Level0-0.unity
+    public int GetSceneBuildIndex()
+    {
+        int level = SceneUtility.GetBuildIndexByScenePath("Assets/Scenes/Levels/Level" + worldNumber + "-" + levelNumber + ".unity");
+        return level;
     }
 }

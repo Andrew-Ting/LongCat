@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Runtime.Serialization.Formatters.Binary;
+using System.Collections.Generic;
 using System.IO;
 using System;
 
@@ -80,12 +81,12 @@ public static class SaveLoadManager
 public class PlayerData
 {
     public bool[] worlds;
-    public bool[] id;
+    public Dictionary<int, Level> ids;
 
     public PlayerData(PlayerManager player)
     {
         worlds = player.GetWorlds();
-        id = player.GetIDs();
+        ids = player.GetIDs();
     }
 }
 
@@ -97,5 +98,18 @@ public class GameData
     public GameData(int id)
     {
         puzzleID = id;
+    }
+}
+
+[Serializable]
+public class Level
+{
+    public bool finished;
+    public bool fished;
+
+    public Level(int n)
+    {
+        finished = false;
+        fished = false;
     }
 }

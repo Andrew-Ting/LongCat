@@ -24,8 +24,7 @@ public class GameManager : MonoBehaviour
         else
         {
             //do loading
-            Debug.Log(gameData.puzzleID);
-            SceneManager.LoadScene(gameData.puzzleID + 2, LoadSceneMode.Additive);
+            SceneManager.LoadScene(levelCollection.levelDataCollection[gameData.puzzleID].GetSceneBuildIndex(), LoadSceneMode.Additive);
             cat.transform.position = levelCollection.levelDataCollection[gameData.puzzleID].catStartingPos;
             cat.SetActive(true);
         }
