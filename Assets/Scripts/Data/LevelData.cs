@@ -9,15 +9,20 @@ public class LevelData : ScriptableObject
     [Header("Level Detail")]
     [HideInInspector]
     public int id;
-    [Tooltip("starts at 0")]
+    [Min(0), Tooltip("starts at 0")]
     public int worldNumber;
-    [Tooltip("starts at 0")]
+    [Min(0), Tooltip("starts at 0")]
     public int levelNumber;
 
     [Header("Level inside")]
     public Vector3 catStartingPos;
+    [Range(1,5)]
     public int catStartingHeight;
 
+#if UNITY_EDITOR
+    [Multiline(5), Header("For developer part only")]
+    public string notes;
+#endif
     public string GetWorldLevelString(bool world, bool level)
     {
         if (world && level)
@@ -29,7 +34,7 @@ public class LevelData : ScriptableObject
         else
             return "-1";
     }
-    // Assets/Scenes/Levels/Level0-0.unity
+
     public int GetSceneBuildIndex()
     {
         int level = SceneUtility.GetBuildIndexByScenePath("Assets/Scenes/Levels/Level" + worldNumber + "-" + levelNumber + ".unity");
