@@ -16,6 +16,13 @@ public class DataClass
         East = 1,
         West = 3
     }
+    public enum MenuCameraViews
+    {
+        homeView,
+        levelView,
+        noView1,
+        noView2
+     }
      // direction camera is facing in game
     public enum BlockState
     {
