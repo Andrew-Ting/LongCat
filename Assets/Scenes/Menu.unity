@@ -4701,11 +4701,14 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Final Filler Cat
+<<<<<<< Updated upstream
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 98a41c069549f5847b2705759a298b87,
         type: 3}
       propertyPath: m_IsActive
       value: 1
+=======
+>>>>>>> Stashed changes
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 98a41c069549f5847b2705759a298b87, type: 3}
