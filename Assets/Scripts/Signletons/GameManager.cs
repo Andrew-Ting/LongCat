@@ -3,6 +3,7 @@ using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
+    public GameObject WinUI;
     [HideInInspector] public LevelData levelData;
     [SerializeField] CatMovement cat;
 
@@ -39,6 +40,7 @@ public class GameManager : MonoBehaviour
 
     public void PlayerWin()
     {
-
+        WinUI.SetActive(true);
+        FindObjectOfType<PlayerManager>().UnlockID(FindObjectOfType<LevelCollection>().GetNextLevelID(levelData.id));
     }
 }
