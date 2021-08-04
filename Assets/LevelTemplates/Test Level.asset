@@ -16,4 +16,5 @@ MonoBehaviour:
   worldNumber: 0
   levelNumber: 0
   catStartingPos: {x: 0, y: 1, z: 0}
-  catStartingHeight: 1
+  catStartingHeight: 2
+  notes: 

@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: 2
   worldNumber: 0
-  levelNumber: 0
+  levelNumber: 1
   catStartingPos: {x: 0, y: 0, z: 0}
   catStartingHeight: 1
   notes: 
