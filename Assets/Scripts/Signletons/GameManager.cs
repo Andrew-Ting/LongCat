@@ -9,7 +9,6 @@ public class GameManager : MonoBehaviour
     // Start is called before the first frame update
     private void Awake()
     {
-
         levelCollection = FindObjectOfType<LevelCollection>();
         #if UNITY_EDITOR
         if (levelCollection == null)
@@ -35,5 +34,10 @@ public class GameManager : MonoBehaviour
             cat.gameObject.SetActive(true);
             cat.StartSetObject();
         }
+    }
+
+    public void PlayerWin()
+    {
+
     }
 }
