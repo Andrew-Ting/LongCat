@@ -3,6 +3,7 @@ using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
+    [HideInInspector] public LevelData levelData;
     [SerializeField] CatMovement cat;
 
     LevelCollection levelCollection;
@@ -27,7 +28,7 @@ public class GameManager : MonoBehaviour
         else
         {
             //do loading
-            LevelData levelData = levelCollection.levelDataCollection[gameData.puzzleID];
+            levelData = levelCollection.levelDataCollection[gameData.puzzleID];
             SceneManager.LoadScene(levelData.GetSceneBuildIndex(), LoadSceneMode.Additive);
             cat.transform.position = levelData.catStartingPos;
             cat.SetCatHeight(levelData.catStartingHeight);

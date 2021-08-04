@@ -4,7 +4,6 @@ public static class LevelLoader
     {
         //finds next id
         SaveLoadManager.SaveGameData(UnityEngine.Object.FindObjectOfType<LevelCollection>().GetNextLevelID(id));
-        //find next level id. to be done later
         UnityEngine.Object.FindObjectOfType<TransitionManager>().OpenScene(1, 0);
     }
 
@@ -12,5 +11,10 @@ public static class LevelLoader
     {
         SaveLoadManager.SaveGameData(id);
         UnityEngine.Object.FindObjectOfType<TransitionManager>().OpenScene(1, 0); //edit this when menu and startup is finished.
+    }
+
+    public static void ReturnHome()
+    {
+        UnityEngine.Object.FindObjectOfType<TransitionManager>().OpenScene(0, 0);
     }
 }

@@ -36,11 +36,13 @@ public class TransitionManager : MonoBehaviour
     {
         if(currentTransitionID == -1)
         {
-            currentTransitionID = transitionID;
-            StartCoroutine(Transition(sceneID, transitionID));
+            if(transitionID <= transitions.Length)
+            {
+                currentTransitionID = transitionID;
+                StartCoroutine(Transition(sceneID, transitionID));
+            }
         }
     }
-
 
     IEnumerator Transition(int sceneID, int transitionID)
     {
