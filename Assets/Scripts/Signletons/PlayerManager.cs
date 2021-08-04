@@ -98,7 +98,7 @@ public class PlayerManager : MonoBehaviour
             Debug.Log("world already unlocked??");
         }
     }
-    public void UnlockID(int n)
+    public void UnlockID(int n) // n is id
     {
         if (!unlockedID.ContainsKey(n)) // if not yet unlocked
         {
@@ -109,7 +109,30 @@ public class PlayerManager : MonoBehaviour
             Debug.Log("ID already unlocked??");
         }
     }
+    public void LevelFinished(int n)
+    {
+        if(unlockedID.ContainsKey(n))
+        {
+            //safe
+            unlockedID[n].finished = true;
+            UnlockID(levelCollection.GetNextLevelID(n));
+        }
+        else
+        {
+            Debug.Log("something fishy going on");
+        }
+    }
+    public void LevelFished(int n)
+    {
+        if (unlockedID.ContainsKey(n))
+        {
+            //safe
+            unlockedID[n].fished = true;
+        }
+        else
+        {
+            Debug.Log("something very fishy going on");
+        }
+    }
 
-    
-    
 }
