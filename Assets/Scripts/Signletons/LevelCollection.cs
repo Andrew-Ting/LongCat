@@ -29,12 +29,12 @@ public class LevelCollection : MonoBehaviour
     public int GetNextLevelID(int currentID)
     {
         LevelData currentLevel = levelDataCollection[currentID];
-        if (currentLevel.levelNumber == levelDataSorted[currentLevel.worldNumber - 1].Count)
+        if (currentLevel.levelNumber == levelDataSorted[currentLevel.worldNumber].Count - 1)
         {
             //is last id, get next world first id
             if(currentLevel.worldNumber == worlds - 1)
             {
-                //last world
+                //last world, last level
                 return -2;
             }
             else
