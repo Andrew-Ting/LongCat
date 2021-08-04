@@ -31,9 +31,15 @@ public class PlayerManager : MonoBehaviour
             //existing player
             SetData(data);
         }
+        else
+        {
+            //new player
+            UnlockWorld(0);
+            UnlockID(0);
+        }
 
         //for testing purposes only
-        if(Application.isEditor)
+        /*if(Application.isEditor)
         {
             for (int i = 0; i < unlockedWorlds.Length; i++)
             {
@@ -43,7 +49,7 @@ public class PlayerManager : MonoBehaviour
             {
                 UnlockID(i);
             }
-        }
+        }*/
     }
 
     private void SetData(PlayerData data) //only done when data exists
