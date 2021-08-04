@@ -9,6 +9,9 @@ public class CameraController : MonoBehaviour
     private DataClass.ViewDirection currentView = DataClass.ViewDirection.North;
     private CatMovement catMovement;
     private Vector3 deltaCatMovement;
+
+    //private Vector3 newCameraPos;
+
     public void RotateView(bool isDirectionClockwiseAbove) {
         currentView += (isDirectionClockwiseAbove ? 1 : -1);
         currentView = (DataClass.ViewDirection)(((int)currentView + 4) % 4);
@@ -16,6 +19,7 @@ public class CameraController : MonoBehaviour
     }
 
     void SetViewDirectionTo(DataClass.ViewDirection destinationView){
+        StopAllCoroutines();
         float cameraHeight = distanceToCharacter * Mathf.Sin(Mathf.PI / 180 * angleOfInclineDegrees);
         float cameraHorizontalProjection = distanceToCharacter * Mathf.Cos(Mathf.PI / 180 * angleOfInclineDegrees) / Mathf.Sqrt(2);
         switch (destinationView) {
@@ -36,6 +40,7 @@ public class CameraController : MonoBehaviour
                 transform.rotation = Quaternion.Euler(angleOfInclineDegrees, 315, 0);
                 break;
         }
+        //StartCoroutine(SetTransformQuaternion());
     }
 
     public DataClass.ViewDirection GetCameraView() {
@@ -59,4 +64,15 @@ public class CameraController : MonoBehaviour
     void Start() {
        SetViewDirectionTo(currentView); 
     }
+
+/*    IEnumerator SetTransformQuaternion()
+    {
+        float dist = 100f;
+        while(dist < 0.5)
+        {
+            transform.position = Vector3.Lerp(transform.position, newCameraPos, 0.05f);
+            dist = Vector3.Distance(transform.position, newCameraPos);
+            yield return null;
+        }
+    }*/
 }
