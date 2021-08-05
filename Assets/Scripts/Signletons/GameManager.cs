@@ -18,7 +18,7 @@ public class GameManager : MonoBehaviour
             SceneManager.LoadScene(0);
             return;
         }
-        #endif 
+#endif
         cat.gameObject.SetActive(false);
         GameData gameData = SaveLoadManager.LoadGameData();
         if (gameData == null)
@@ -40,8 +40,9 @@ public class GameManager : MonoBehaviour
 
     public void PlayerWin()
     {
+
+        WinUI.SetActive(true);
         LevelLoader.SaveNextGame(levelData.id);
         FindObjectOfType<PlayerManager>().LevelFinished(levelData.id);
-        WinUI.SetActive(true);
     }
 }

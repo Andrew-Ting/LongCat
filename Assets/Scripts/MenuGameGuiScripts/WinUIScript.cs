@@ -1,7 +1,4 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 
 public class WinUIScript : MonoBehaviour
 {
@@ -10,7 +7,6 @@ public class WinUIScript : MonoBehaviour
     void Start()
     {
         gameManager = FindObjectOfType<GameManager>();
-        gameObject.SetActive(false);
     }
 
     public void ReturnHome()
