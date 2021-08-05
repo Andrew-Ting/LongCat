@@ -4,7 +4,9 @@ using UnityEngine;
 
 public class CameraController : MonoBehaviour
 {
+    [Range(2, 8)]
     [SerializeField] private int distanceToCharacter = 5;
+    [Range(0,90)]
     [SerializeField] private int angleOfInclineDegrees = 45;
     private DataClass.ViewDirection currentView = DataClass.ViewDirection.North;
     private CatMovement catMovement;
@@ -52,9 +54,11 @@ public class CameraController : MonoBehaviour
         deltaCatMovement += currentDeltaCatMovement;
     }
 
-    void Awake() {
+    private void Awake()
+    {
         catMovement = FindObjectOfType<CatMovement>();
     }
+
     void OnEnable() {
         catMovement.CatMoveAction += AdjustPosition;
     }
@@ -62,7 +66,8 @@ public class CameraController : MonoBehaviour
         catMovement.CatMoveAction -= AdjustPosition;
     }
     void Start() {
-       SetViewDirectionTo(currentView); 
+        deltaCatMovement += catMovement.transform.position;
+        SetViewDirectionTo(currentView); 
     }
 
 /*    IEnumerator SetTransformQuaternion()

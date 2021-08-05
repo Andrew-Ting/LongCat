@@ -116,6 +116,7 @@ public class PlayerManager : MonoBehaviour
             //safe
             unlockedID[n].finished = true;
             UnlockID(levelCollection.GetNextLevelID(n));
+            SaveLoadManager.SavePlayer(this);
         }
         else
         {
@@ -128,6 +129,7 @@ public class PlayerManager : MonoBehaviour
         {
             //safe
             unlockedID[n].fished = true;
+            SaveLoadManager.SavePlayer(this);
         }
         else
         {
