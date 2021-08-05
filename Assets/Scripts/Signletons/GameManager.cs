@@ -41,6 +41,7 @@ public class GameManager : MonoBehaviour
     public void PlayerWin()
     {
         WinUI.SetActive(true);
+        LevelLoader.SaveNextGame(levelData.id);
         FindObjectOfType<PlayerManager>().LevelFinished(levelData.id);
     }
 }
