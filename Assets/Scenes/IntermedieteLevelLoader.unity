@@ -357,6 +357,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Cat
       objectReference: {fileID: 0}
+    - target: {fileID: 1747540604055366476, guid: 18520ba846dd75440be518f2b2eb4b72,
+        type: 3}
+      propertyPath: outlineMode
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 18520ba846dd75440be518f2b2eb4b72, type: 3}
 --- !u!1 &212110611
