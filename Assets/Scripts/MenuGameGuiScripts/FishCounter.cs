@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -28,6 +26,7 @@ public class FishCounter : MonoBehaviour
     void OnEnable()
     {
         playerManager.fishCounter += FishChange;
+        ChangeText(playerManager.GetFishCount());
     }
     void OnDisable()
     {
