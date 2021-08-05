@@ -21,4 +21,9 @@ public class SettingsMenu : MonoBehaviour
         SaveLoadManager.DeleteGameData();
         LevelLoader.ReturnHome();
     }
+
+    public void GoHomeFunc()
+    {
+        LevelLoader.ReturnHome();
+    }
 }
