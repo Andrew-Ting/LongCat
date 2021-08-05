@@ -1,14 +1,18 @@
 using UnityEngine;
+using System;
 using System.Collections.Generic;
 
 public class PlayerManager : MonoBehaviour
 {
+    public event Action<int> fishCounter;
+
     private static PlayerManager instance;
     private LevelCollection levelCollection;
 
     //all data
     private bool[] unlockedWorlds;
     private Dictionary<int, Level> unlockedID;
+    private int fish;
 
     public void Awake()
     {
@@ -36,6 +40,7 @@ public class PlayerManager : MonoBehaviour
             //new player
             UnlockWorld(0);
             UnlockID(0);
+            GetFish(2);
         }
 
         //for testing purposes only
@@ -56,6 +61,9 @@ public class PlayerManager : MonoBehaviour
     {
         data.worlds.CopyTo(unlockedWorlds, 0);
         unlockedID = data.ids;
+        
+        fish = data.fish;
+        fishCounter?.Invoke(fish);
     }
 
     //Getting stuff
@@ -84,6 +92,10 @@ public class PlayerManager : MonoBehaviour
     public Dictionary<int, Level> GetIDs()
     {
         return unlockedID;
+    }
+    public int GetFishCount()
+    {
+        return fish;
     }
 
     //unlocking stuff
@@ -128,13 +140,26 @@ public class PlayerManager : MonoBehaviour
         if (unlockedID.ContainsKey(n))
         {
             //safe
-            unlockedID[n].fished = true;
-            SaveLoadManager.SavePlayer(this);
+            if(!unlockedID[n].fished)
+            {
+                GetFish(1);
+                unlockedID[n].fished = true;
+                SaveLoadManager.SavePlayer(this);
+            }
         }
         else
         {
             Debug.Log("something very fishy going on");
         }
     }
-
+    public void GetFish(int n)
+    {
+        fish += n;
+        fishCounter?.Invoke(fish);
+    }
+    public void SpendFish(int n)
+    {
+        fish -= n;
+        fishCounter?.Invoke(fish);
+    }
 }
