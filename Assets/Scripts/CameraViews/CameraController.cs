@@ -8,12 +8,10 @@ public class CameraController : MonoBehaviour
     [SerializeField] private int distanceToCharacter = 5;
     [Range(0,90)]
     [SerializeField] private int angleOfInclineDegrees = 45;
+    [SerializeField] private float switchViewSpeed = 0.01f; // normalized value; 1 means instant switch of view
     private DataClass.ViewDirection currentView = DataClass.ViewDirection.North;
     private CatMovement catMovement;
-    private Vector3 deltaCatMovement;
-
-    //private Vector3 newCameraPos;
-
+    private Vector3 deltaCatMovement; 
     public void RotateView(bool isDirectionClockwiseAbove) {
         currentView += (isDirectionClockwiseAbove ? 1 : -1);
         currentView = (DataClass.ViewDirection)(((int)currentView + 4) % 4);
@@ -24,25 +22,27 @@ public class CameraController : MonoBehaviour
         StopAllCoroutines();
         float cameraHeight = distanceToCharacter * Mathf.Sin(Mathf.PI / 180 * angleOfInclineDegrees);
         float cameraHorizontalProjection = distanceToCharacter * Mathf.Cos(Mathf.PI / 180 * angleOfInclineDegrees) / Mathf.Sqrt(2);
+        Vector3 newPosition = Vector3.zero;
+        Quaternion newRotation = Quaternion.identity;
         switch (destinationView) {
             case DataClass.ViewDirection.North:
-                transform.position = new Vector3(-cameraHorizontalProjection, cameraHeight, -cameraHorizontalProjection) + deltaCatMovement;
-                transform.rotation = Quaternion.Euler(angleOfInclineDegrees, 45, 0);
+                newPosition = new Vector3(-cameraHorizontalProjection, cameraHeight, -cameraHorizontalProjection) + deltaCatMovement;
+                newRotation = Quaternion.Euler(angleOfInclineDegrees, 45, 0);
                 break;
             case DataClass.ViewDirection.East:
-                transform.position = new Vector3(-cameraHorizontalProjection, cameraHeight, cameraHorizontalProjection) + deltaCatMovement;
-                transform.rotation = Quaternion.Euler(angleOfInclineDegrees, 135, 0);
+                newPosition = new Vector3(-cameraHorizontalProjection, cameraHeight, cameraHorizontalProjection) + deltaCatMovement;
+                newRotation = Quaternion.Euler(angleOfInclineDegrees, 135, 0);
                 break;
             case DataClass.ViewDirection.South:
-                transform.position = new Vector3(cameraHorizontalProjection, cameraHeight, cameraHorizontalProjection) + deltaCatMovement;
-                transform.rotation = Quaternion.Euler(angleOfInclineDegrees, 225, 0);
+                newPosition = new Vector3(cameraHorizontalProjection, cameraHeight, cameraHorizontalProjection) + deltaCatMovement;
+                newRotation = Quaternion.Euler(angleOfInclineDegrees, 225, 0);
                 break;
             case DataClass.ViewDirection.West:
-                transform.position = new Vector3(cameraHorizontalProjection, cameraHeight, -cameraHorizontalProjection) + deltaCatMovement;
-                transform.rotation = Quaternion.Euler(angleOfInclineDegrees, 315, 0);
+                newPosition = new Vector3(cameraHorizontalProjection, cameraHeight, -cameraHorizontalProjection) + deltaCatMovement;
+                newRotation = Quaternion.Euler(angleOfInclineDegrees, 315, 0);
                 break;
         }
-        //StartCoroutine(SetTransformQuaternion());
+        StartCoroutine(SetTransformQuaternion(newPosition, newRotation));
     }
 
     public DataClass.ViewDirection GetCameraView() {
@@ -70,14 +70,17 @@ public class CameraController : MonoBehaviour
         SetViewDirectionTo(currentView); 
     }
 
-/*    IEnumerator SetTransformQuaternion()
+    IEnumerator SetTransformQuaternion(Vector3 newCameraPos, Quaternion newCameraRot)
     {
-        float dist = 100f;
-        while(dist < 0.5)
+        float progress = 0;
+        Vector3 startPos = transform.position;
+        Quaternion startAngle = transform.rotation;
+        while(progress < 1)
         {
-            transform.position = Vector3.Lerp(transform.position, newCameraPos, 0.05f);
-            dist = Vector3.Distance(transform.position, newCameraPos);
+            transform.position = Vector3.Lerp(startPos, newCameraPos, progress);
+            transform.rotation = Quaternion.Lerp(startAngle, newCameraRot, progress);
+            progress += switchViewSpeed;
             yield return null;
         }
-    }*/
+    }
 }
