@@ -72,13 +72,17 @@ public class CameraController : MonoBehaviour
 
     IEnumerator SetTransformQuaternion(Vector3 newCameraPos, Quaternion newCameraRot)
     {
+        float cameraHeight = distanceToCharacter * Mathf.Sin(Mathf.PI / 180 * angleOfInclineDegrees);
         float progress = 0;
         Vector3 startPos = transform.position;
+        Vector3 pivotOfRotation = new Vector3(catMovement.transform.position.x, cameraHeight + deltaCatMovement.y, catMovement.transform.position.z);
+        startPos -= pivotOfRotation;
+        newCameraPos -= pivotOfRotation;
         Quaternion startAngle = transform.rotation;
         while(progress < 1)
         {
-            transform.position = Vector3.Lerp(startPos, newCameraPos, progress);
-            transform.rotation = Quaternion.Lerp(startAngle, newCameraRot, progress);
+            transform.position = Vector3.Slerp(startPos, newCameraPos, progress) + Vector3.up * cameraHeight + deltaCatMovement;
+            transform.rotation = Quaternion.Slerp(startAngle, newCameraRot, progress);
             progress += switchViewSpeed;
             yield return null;
         }
