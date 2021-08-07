@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -8,7 +6,8 @@ public class MovementButtonController : MonoBehaviour
 {
     private CatMovement catMovement;
     [SerializeField] private DataClass.Directions directionOfMovement;
-    void Awake() {
+    void Awake() 
+    {
         catMovement = FindObjectOfType<CatMovement>();
     }
 

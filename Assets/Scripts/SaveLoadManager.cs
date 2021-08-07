@@ -82,9 +82,10 @@ public class PlayerData
 {
     public bool[] worlds;
     public Dictionary<int, Level> ids;
-
+    public int fish;
     public PlayerData(PlayerManager player)
     {
+        fish = player.GetFishCount();
         worlds = player.GetWorlds();
         ids = player.GetIDs();
     }

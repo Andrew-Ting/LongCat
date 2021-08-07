@@ -1,14 +1,18 @@
 using UnityEngine;
+using System;
 using System.Collections.Generic;
 
 public class PlayerManager : MonoBehaviour
 {
+    public event Action<int> fishCounter;
+
     private static PlayerManager instance;
     private LevelCollection levelCollection;
 
     //all data
     private bool[] unlockedWorlds;
     private Dictionary<int, Level> unlockedID;
+    private int fish;
 
     public void Awake()
     {
@@ -31,9 +35,16 @@ public class PlayerManager : MonoBehaviour
             //existing player
             SetData(data);
         }
+        else
+        {
+            //new player
+            UnlockWorld(0);
+            UnlockID(0);
+            GetFish(2);
+        }
 
         //for testing purposes only
-        if(Application.isEditor)
+        /*if(Application.isEditor)
         {
             for (int i = 0; i < unlockedWorlds.Length; i++)
             {
@@ -43,13 +54,16 @@ public class PlayerManager : MonoBehaviour
             {
                 UnlockID(i);
             }
-        }
+        }*/
     }
 
     private void SetData(PlayerData data) //only done when data exists
     {
         data.worlds.CopyTo(unlockedWorlds, 0);
         unlockedID = data.ids;
+        
+        fish = data.fish;
+        fishCounter?.Invoke(fish);
     }
 
     //Getting stuff
@@ -79,6 +93,10 @@ public class PlayerManager : MonoBehaviour
     {
         return unlockedID;
     }
+    public int GetFishCount()
+    {
+        return fish;
+    }
 
     //unlocking stuff
     public void UnlockWorld(int n) // n is world number
@@ -92,7 +110,7 @@ public class PlayerManager : MonoBehaviour
             Debug.Log("world already unlocked??");
         }
     }
-    public void UnlockID(int n)
+    public void UnlockID(int n) // n is id
     {
         if (!unlockedID.ContainsKey(n)) // if not yet unlocked
         {
@@ -103,7 +121,45 @@ public class PlayerManager : MonoBehaviour
             Debug.Log("ID already unlocked??");
         }
     }
-
-    
-    
+    public void LevelFinished(int n)
+    {
+        if(unlockedID.ContainsKey(n))
+        {
+            //safe
+            unlockedID[n].finished = true;
+            UnlockID(levelCollection.GetNextLevelID(n));
+            SaveLoadManager.SavePlayer(this);
+        }
+        else
+        {
+            Debug.Log("something fishy going on");
+        }
+    }
+    public void LevelFished(int n)
+    {
+        if (unlockedID.ContainsKey(n))
+        {
+            //safe
+            if(!unlockedID[n].fished)
+            {
+                GetFish(1);
+                unlockedID[n].fished = true;
+                SaveLoadManager.SavePlayer(this);
+            }
+        }
+        else
+        {
+            Debug.Log("something very fishy going on");
+        }
+    }
+    public void GetFish(int n)
+    {
+        fish += n;
+        fishCounter?.Invoke(fish);
+    }
+    public void SpendFish(int n)
+    {
+        fish -= n;
+        fishCounter?.Invoke(fish);
+    }
 }

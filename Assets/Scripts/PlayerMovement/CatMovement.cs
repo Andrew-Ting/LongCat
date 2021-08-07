@@ -1,5 +1,6 @@
 using UnityEngine;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 
 public class CatMovement : MonoBehaviour
@@ -217,7 +218,6 @@ public class CatMovement : MonoBehaviour
     void Awake()
     {
         cameraController = FindObjectOfType<CameraController>();
-        blockManager = FindObjectOfType<BlockManager>();
         var powerupTypes = FindObjectsOfType<ItemCountController>(); 
         itemCountController = new Dictionary<DataClass.PowerUp, ItemCountController>();
         for (int i = 0; i < powerupTypes.Length; i++) {
@@ -225,4 +225,28 @@ public class CatMovement : MonoBehaviour
             itemCountController[currentUICount.GetPowerupType()] = currentUICount;
         }
     }
+
+    public void StartSetObject()
+    {
+        //blockManager = GameObject.Find("Map").GetComponentInChildren<BlockManager>();
+        StartCoroutine(SetObject());
+    }
+
+    public void SetCatHeight(int newHeight) //only done on the start
+    {
+        catHeight = newHeight;
+    }
+
+    IEnumerator SetObject()
+    {
+        GameObject map = null;
+        while (map == null)
+        {
+            map = GameObject.Find("Map");
+            //blockManager = FindObjectOfType<BlockManager>();
+            yield return new WaitForEndOfFrame();
+        }
+        blockManager = map.GetComponentInChildren<BlockManager>();
+    }
+
 }

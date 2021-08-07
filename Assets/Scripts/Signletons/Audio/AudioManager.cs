@@ -52,6 +52,7 @@ public class AudioManager : MonoBehaviour
             }
             s.source.volume = PlayerPrefs.GetFloat(s.type.ToString(), 1f);
             s.source.Play();
+            Debug.Log("now playing: " + s.name);
         }
         else
         {

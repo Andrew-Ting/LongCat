@@ -14,4 +14,16 @@ public class SettingsMenu : MonoBehaviour
         BGMslider.onValueChanged.AddListener(delegate { PlayerPrefs.SetFloat("BGM", BGMslider.value); FindObjectOfType<AudioManager>().UpdateBGMVolume(); });
         SFXslider.onValueChanged.AddListener(delegate { PlayerPrefs.SetFloat("SFX", SFXslider.value); });
     }
+
+    public void DeletePlayerFiles()
+    {
+        SaveLoadManager.DeletePlayer();
+        SaveLoadManager.DeleteGameData();
+        LevelLoader.ReturnHome();
+    }
+
+    public void GoHomeFunc()
+    {
+        LevelLoader.ReturnHome();
+    }
 }
