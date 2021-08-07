@@ -22,7 +22,7 @@ public class CatMovement : MonoBehaviour
     private Dictionary<DataClass.PowerUp, ItemCountController> itemCountController;
     public void MoveCat(DataClass.Directions dirIndex)
     {
-        if (areBlocksMoving) // you don't want the cat to be able to move as blocks are falling; opens a can of worms in logic
+        if (areBlocksMoving || Time.timeScale == 0) // you don't want the cat to be able to move as blocks are falling; opens a can of worms in logic
             return;
         int p = ((int)dirIndex + (int)cameraController.GetCameraView()) % 4;
         int dir = p < 2 ? 1 : -1;
