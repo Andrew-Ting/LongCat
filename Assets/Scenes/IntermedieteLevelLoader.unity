@@ -136,6 +136,7 @@ GameObject:
   - component: {fileID: 27450299}
   - component: {fileID: 27450298}
   - component: {fileID: 27450301}
+  - component: {fileID: 27450302}
   m_Layer: 5
   m_Name: WinUI
   m_TagString: Untagged
@@ -226,6 +227,25 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a6bd71a033855504bb95a11117b3bab2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!95 &27450302
+Animator:
+  serializedVersion: 3
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 27450296}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 79351841a237a014087418a2daac565d, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!1 &80331280
 GameObject:
   m_ObjectHideFlags: 0
@@ -3478,6 +3498,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   distanceToCharacter: 8
   angleOfInclineDegrees: 52
+  switchViewSpeed: 0.01
 --- !u!81 &1414188211
 AudioListener:
   m_ObjectHideFlags: 0
@@ -4500,6 +4521,7 @@ GameObject:
   - component: {fileID: 1713126717}
   - component: {fileID: 1713126719}
   - component: {fileID: 1713126718}
+  - component: {fileID: 1713126720}
   m_Layer: 5
   m_Name: smallMenuBG
   m_TagString: Untagged
@@ -4566,6 +4588,18 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1713126716}
   m_CullTransparentMesh: 1
+--- !u!225 &1713126720
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1713126716}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1 &1753594358
 GameObject:
   m_ObjectHideFlags: 0
@@ -4652,6 +4686,7 @@ GameObject:
   - component: {fileID: 1759190446}
   - component: {fileID: 1759190448}
   - component: {fileID: 1759190447}
+  - component: {fileID: 1759190449}
   m_Layer: 5
   m_Name: WinText
   m_TagString: Untagged
@@ -4720,6 +4755,18 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1759190445}
   m_CullTransparentMesh: 1
+--- !u!225 &1759190449
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1759190445}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1 &1827519564
 GameObject:
   m_ObjectHideFlags: 0
