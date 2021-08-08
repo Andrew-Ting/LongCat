@@ -242,7 +242,7 @@ public class CatMovement : MonoBehaviour
         GameObject map = null;
         while (map == null)
         {
-            map = GameObject.Find("Map");
+            map = GameObject.Find("Map Foundation");
             //blockManager = FindObjectOfType<BlockManager>();
             yield return new WaitForEndOfFrame();
         }
