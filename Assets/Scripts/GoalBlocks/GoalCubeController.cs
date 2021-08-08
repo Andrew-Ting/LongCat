@@ -12,7 +12,9 @@ public class GoalCubeController : MonoBehaviour
     }
 
     void OnTriggerEnter(Collider collisionObject) {
+        Debug.Log("Detected collision");
         if (collisionObject.gameObject.layer == blockLayer) {
+            Debug.Log("Added counter");
             goalBlockController.AddSatisfiedCount();
         }
     }

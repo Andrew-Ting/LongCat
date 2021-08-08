@@ -1,15 +1,15 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+// currently unnecessary script
 public class TimeScaleController : MonoBehaviour
 {
-    private GoalBlockController goalBlockController;
+    //private GoalBlockController goalBlockController;
     void Awake()
     {
-        goalBlockController = GetComponent<GoalBlockController>();
-        goalBlockController.EndGame += PauseTime;
-        goalBlockController.StartGame += StartTime;
+        //goalBlockController = GetComponent<GoalBlockController>();
+        //goalBlockController.EndGame += PauseTime;
+        //goalBlockController.StartGame += StartTime;
     }
 
     void StartTime(){
