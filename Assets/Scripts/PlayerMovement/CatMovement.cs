@@ -228,7 +228,6 @@ public class CatMovement : MonoBehaviour
 
     public void StartSetObject()
     {
-        //blockManager = GameObject.Find("Map").GetComponentInChildren<BlockManager>();
         StartCoroutine(SetObject());
     }
 
@@ -243,7 +242,6 @@ public class CatMovement : MonoBehaviour
         while (map == null)
         {
             map = GameObject.Find("Map");
-            //blockManager = FindObjectOfType<BlockManager>();
             yield return new WaitForEndOfFrame();
         }
         blockManager = map.GetComponentInChildren<BlockManager>();

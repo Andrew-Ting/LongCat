@@ -39,8 +39,7 @@ public class GoalBlockController : MonoBehaviour
             Debug.LogError("There cannot be a negative number of goal blocks satisfied in the level");
     }
     void CheckEndGame() {
-        Debug.Log(goalCubeQuantity + " " + goalCubeSatisfied);
-        if (goalCubeQuantity == goalCubeSatisfied) {
+        if (goalCubeQuantity == goalCubeSatisfied && goalCubeQuantity != 0) { // if the value was 0, it means the cat was moved initially to set the level; this is not an end game condition
             //endGamePanel.SetActive(true);
             gameManager.PlayerWin();
             EndGame?.Invoke();
