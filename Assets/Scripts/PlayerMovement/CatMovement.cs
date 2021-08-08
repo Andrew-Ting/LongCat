@@ -16,11 +16,13 @@ public class CatMovement : MonoBehaviour
     [SerializeField]
     LayerMask objects = (1 << 6 | 1 << 7);
     public event Action<Vector3> CatMoveAction;
+    private Animator catAnimator;
     private CameraController cameraController;
     private BlockManager blockManager;
     private Vector3 moveCatVector; // direction cat will move once it is ready for movement
     private bool areBlocksMoving = false;
     private Dictionary<DataClass.PowerUp, ItemCountController> itemCountController;
+
     public void MoveCat(DataClass.Directions dirIndex)
     {
         if (areBlocksMoving || Time.timeScale == 0) // you don't want the cat to be able to move as blocks are falling; opens a can of worms in logic
@@ -117,10 +119,15 @@ public class CatMovement : MonoBehaviour
             }
         }
         moveCatVector = newMoveDirection;
-        CatMoveAction?.Invoke(newMoveDirection);
+        CatMoveAction?.Invoke(newMoveDirection); 
     }
 
     public void ReadyForMovement() { // called by BlockManager when all blocks have moved to fixed position
+        /*if (Vector3.Magnitude(moveCatVector) == 1) // do animation when only goes forward
+        {
+            transform.GetChild(0);
+            catAnimator.SetTrigger("Jump");
+        }*/
         CollectAllBerriesAlong(moveCatVector);
         transform.position += moveCatVector;
     }
@@ -217,6 +224,7 @@ public class CatMovement : MonoBehaviour
     }
     void Awake()
     {
+        catAnimator = GetComponent<Animator>();
         cameraController = FindObjectOfType<CameraController>();
         var powerupTypes = FindObjectsOfType<ItemCountController>(); 
         itemCountController = new Dictionary<DataClass.PowerUp, ItemCountController>();
