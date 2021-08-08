@@ -125,7 +125,7 @@ public class CatMovement : MonoBehaviour
     public void ReadyForMovement() { // called by BlockManager when all blocks have moved to fixed position
         if (Vector3.Magnitude(moveCatVector) == 1) // do animation when only goes forward
         {
-            transform.GetChild(0);
+            transform.GetChild(0).position = -Vector3.forward;
             catAnimator.SetTrigger("Jump");
         }
         CollectAllBerriesAlong(moveCatVector);
