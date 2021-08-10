@@ -30,15 +30,13 @@ public class CatMovement : MonoBehaviour
         Vector3 newDirection = p % 2 == 0 ? dir * Vector3.forward : dir * Vector3.right;
         FaceDirection(newDirection);
         Vector3 newMoveDirection = newDirection; // this is relative
-        if (!Physics.Raycast(transform.position + Vector3.up * catHeight + transform.forward, -Vector3.up, catHeight, objects))
+        if (!Physics.Raycast(transform.position + Vector3.up * catHeight + transform.forward, -Vector3.up, catHeight, objects)) //nothing is in front of it
         {
             Ray ray = new Ray(transform.position + transform.forward, -Vector3.up);
-            RaycastHit hit;
-            //nothing is in front of it
-            if (Physics.Raycast(ray, out hit, 2, objects))
+            if (Physics.Raycast(ray, out RaycastHit hit, 2, objects))
             {
                 //hits something
-                if(hit.transform.position.y + 1 != transform.position.y)
+                if (Mathf.RoundToInt(hit.transform.position.y) + 1 != transform.position.y)
                 {
                     newMoveDirection -= Vector3.up;
                 }
