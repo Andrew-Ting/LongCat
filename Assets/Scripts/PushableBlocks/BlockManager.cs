@@ -1,9 +1,11 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class BlockManager : MonoBehaviour
 {
+    public event Action moveCompleted;
     [SerializeField] 
     private int maxBlockStackHeight = 5; // lower value means less stack before bugs, higher value means slower before next move can be made
     private List<GameObject> blocks = new List<GameObject>();
@@ -54,6 +56,7 @@ public class BlockManager : MonoBehaviour
             }
             toBeDeletedBlocks.Clear();
         }
+        moveCompleted?.Invoke();
         catMovement.SetAreBlocksMoving(false);
     }
     public void SetAllBlockMovableStateTo(bool newState) {

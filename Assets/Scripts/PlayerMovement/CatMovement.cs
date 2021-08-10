@@ -1,5 +1,6 @@
 using UnityEngine;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 
 public class CatMovement : MonoBehaviour
@@ -22,22 +23,20 @@ public class CatMovement : MonoBehaviour
     private Dictionary<DataClass.PowerUp, ItemCountController> itemCountController;
     public void MoveCat(DataClass.Directions dirIndex)
     {
-        if (areBlocksMoving) // you don't want the cat to be able to move as blocks are falling; opens a can of worms in logic
+        if (areBlocksMoving || Time.timeScale == 0) // you don't want the cat to be able to move as blocks are falling; opens a can of worms in logic
             return;
         int p = ((int)dirIndex + (int)cameraController.GetCameraView()) % 4;
         int dir = p < 2 ? 1 : -1;
         Vector3 newDirection = p % 2 == 0 ? dir * Vector3.forward : dir * Vector3.right;
         FaceDirection(newDirection);
         Vector3 newMoveDirection = newDirection; // this is relative
-        if (!Physics.Raycast(transform.position + Vector3.up * catHeight + transform.forward, -Vector3.up, catHeight, objects))
+        if (!Physics.Raycast(transform.position + Vector3.up * catHeight + transform.forward, -Vector3.up, catHeight, objects)) //nothing is in front of it
         {
             Ray ray = new Ray(transform.position + transform.forward, -Vector3.up);
-            RaycastHit hit;
-            //nothing is in front of it
-            if (Physics.Raycast(ray, out hit, 2, objects))
+            if (Physics.Raycast(ray, out RaycastHit hit, 2, objects))
             {
                 //hits something
-                if(hit.transform.position.y + 1 != transform.position.y)
+                if (Mathf.RoundToInt(hit.transform.position.y) + 1 != transform.position.y)
                 {
                     newMoveDirection -= Vector3.up;
                 }
@@ -217,7 +216,6 @@ public class CatMovement : MonoBehaviour
     void Awake()
     {
         cameraController = FindObjectOfType<CameraController>();
-        blockManager = FindObjectOfType<BlockManager>();
         var powerupTypes = FindObjectsOfType<ItemCountController>(); 
         itemCountController = new Dictionary<DataClass.PowerUp, ItemCountController>();
         for (int i = 0; i < powerupTypes.Length; i++) {
@@ -225,4 +223,28 @@ public class CatMovement : MonoBehaviour
             itemCountController[currentUICount.GetPowerupType()] = currentUICount;
         }
     }
+
+    public void StartSetObject()
+    {
+        //blockManager = GameObject.Find("Map").GetComponentInChildren<BlockManager>();
+        StartCoroutine(SetObject());
+    }
+
+    public void SetCatHeight(int newHeight) //only done on the start
+    {
+        catHeight = newHeight;
+    }
+
+    IEnumerator SetObject()
+    {
+        GameObject map = null;
+        while (map == null)
+        {
+            map = GameObject.Find("Map");
+            //blockManager = FindObjectOfType<BlockManager>();
+            yield return new WaitForEndOfFrame();
+        }
+        blockManager = map.GetComponentInChildren<BlockManager>();
+    }
+
 }

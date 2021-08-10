@@ -21,6 +21,7 @@ public class ButtonWorldMapLevelSelect : MonoBehaviour, IPointerClickHandler
         {
             //load scene
             Debug.Log("not locked");
+            LevelLoader.LoadGame(level.id);
         }
         else
         {
