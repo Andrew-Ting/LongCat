@@ -23,8 +23,7 @@ public class CatMovement : MonoBehaviour
     private Dictionary<DataClass.PowerUp, ItemCountController> itemCountController;
     //for animation
     [Header("For animation")]
-    [SerializeField] float tolerance = 0.05f;
-    [SerializeField] float rigidity = 0.15f;
+    [SerializeField]private float animSpeed = 0.05f;
     private Transform catModelGameObject;
 
     public void MoveCat(DataClass.Directions dirIndex)
@@ -149,21 +148,23 @@ public class CatMovement : MonoBehaviour
 
     IEnumerator CatFlatMove()
     {
-        while (Vector3.Distance(Vector3.zero, catModelGameObject.localPosition) > tolerance)
+        float progress = 0;
+        while (progress <= 1)
         {
-            catModelGameObject.localPosition = new Vector3(0, JumpFlatCurve(1f - Vector3.Distance(Vector3.zero, catModelGameObject.localPosition)),Vector3.Lerp(catModelGameObject.localPosition, Vector3.zero, rigidity).z);
+            catModelGameObject.localPosition = new Vector3(0, JumpFlatCurve(progress),Vector3.Lerp(catModelGameObject.localPosition, Vector3.zero, progress).z);
+            progress += animSpeed;
             yield return new WaitForEndOfFrame();
         }
-        catModelGameObject.localPosition = Vector3.zero;
     }
     IEnumerator CatDownMove()
     {
-        while (Vector3.Distance(Vector3.zero, catModelGameObject.localPosition) > tolerance)
+        float progress = 0;
+        while (progress <= 1)
         {
-            catModelGameObject.localPosition = new Vector3(0, JumpDownCurve(1f+catModelGameObject.localPosition.z), Vector3.Lerp(catModelGameObject.localPosition, Vector3.zero, rigidity).z);
+            catModelGameObject.localPosition = new Vector3(0, JumpDownCurve(progress), Vector3.Lerp(catModelGameObject.localPosition, Vector3.zero, progress).z);
+            progress += animSpeed;
             yield return new WaitForEndOfFrame();
         }
-        catModelGameObject.localPosition = Vector3.zero;
     }
 
     public void SetAreBlocksMoving(bool newState) {

@@ -471,6 +471,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 193441386154939530, guid: 18520ba846dd75440be518f2b2eb4b72,
+        type: 3}
+      propertyPath: animSpeed
+      value: 0.02
+      objectReference: {fileID: 0}
     - target: {fileID: 193441386154939531, guid: 18520ba846dd75440be518f2b2eb4b72,
         type: 3}
       propertyPath: m_RootOrder
@@ -3576,6 +3581,7 @@ MonoBehaviour:
   distanceToCharacter: 8
   angleOfInclineDegrees: 52
   switchViewSpeed: 0.01
+  moveViewSpeed: 0.04
 --- !u!81 &1414188211
 AudioListener:
   m_ObjectHideFlags: 0

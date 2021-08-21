@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class CameraController : MonoBehaviour
@@ -9,6 +8,7 @@ public class CameraController : MonoBehaviour
     [Range(0,90)]
     [SerializeField] private int angleOfInclineDegrees = 45;
     [SerializeField] private float switchViewSpeed = 0.01f; // normalized value; 1 means instant switch of view
+    [SerializeField] private float moveViewSpeed = 0.05f;
     private DataClass.ViewDirection currentView = DataClass.ViewDirection.North;
     private CatMovement catMovement;
     private Vector3 deltaCatMovement; 
@@ -50,7 +50,7 @@ public class CameraController : MonoBehaviour
     }
 
     void AdjustPosition(Vector3 currentDeltaCatMovement) {
-        transform.position += currentDeltaCatMovement;
+        StartCoroutine(SetTransform(transform.position + currentDeltaCatMovement));
         deltaCatMovement += currentDeltaCatMovement;
     }
 
@@ -79,11 +79,23 @@ public class CameraController : MonoBehaviour
         startPos -= pivotOfRotation;
         newCameraPos -= pivotOfRotation;
         Quaternion startAngle = transform.rotation;
-        while(progress < 1)
+        while(progress <= 1)
         {
             transform.position = Vector3.Slerp(startPos, newCameraPos, progress) + Vector3.up * cameraHeight + deltaCatMovement;
             transform.rotation = Quaternion.Slerp(startAngle, newCameraRot, progress);
             progress += switchViewSpeed;
+            yield return null;
+        }
+    }
+
+    IEnumerator SetTransform(Vector3 newCameraPos)
+    {
+        float progress = 0;
+        Vector3 startPos = transform.position;
+        while (progress <= 1)
+        {
+            transform.position = Vector3.Lerp(startPos, newCameraPos, progress);
+            progress += moveViewSpeed;
             yield return null;
         }
     }
