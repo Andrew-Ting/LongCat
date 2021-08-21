@@ -24,6 +24,7 @@ public class CatMovement : MonoBehaviour
     //for animation
     [Header("For animation")]
     [SerializeField]private float animSpeed = 0.05f;
+    [SerializeField] private float rotateSpeed = 0.04f;
     private Transform catModelGameObject;
 
     public void MoveCat(DataClass.Directions dirIndex)
@@ -33,7 +34,8 @@ public class CatMovement : MonoBehaviour
         int p = ((int)dirIndex + (int)cameraController.GetCameraView()) % 4;
         int dir = p < 2 ? 1 : -1;
         Vector3 newDirection = p % 2 == 0 ? dir * Vector3.forward : dir * Vector3.right;
-        FaceDirection(newDirection);
+        StopCoroutine(CatRotate(newDirection));
+        StartCoroutine(CatRotate(newDirection));
         Vector3 newMoveDirection = newDirection; // this is relative
         if (!Physics.Raycast(transform.position + Vector3.up * catHeight + transform.forward, -Vector3.up, catHeight, objects)) //nothing is in front of it
         {
@@ -150,12 +152,29 @@ public class CatMovement : MonoBehaviour
         transform.position += moveCatVector;
     }
 
+    IEnumerator CatRotate(Vector3 direction)
+    {
+        float angle = Vector3.SignedAngle(transform.forward, direction, Vector3.up);
+        transform.Rotate(Vector3.up, angle);
+        catModelGameObject.Rotate(Vector3.up, -angle);
+        float newAngle = angle * rotateSpeed;
+        float progress = 0;
+        while(progress <= 1)
+        {
+            catModelGameObject.transform.Rotate(Vector3.up, newAngle);
+            progress += rotateSpeed;
+            yield return new WaitForEndOfFrame();
+        }
+        angle = Vector3.SignedAngle(transform.forward, direction, Vector3.up);
+        catModelGameObject.transform.Rotate(Vector3.up, angle);
+    }
+
     IEnumerator CatFlatMove()
     {
         float progress = 0;
         while (progress <= 1)
         {
-            catModelGameObject.localPosition = new Vector3(0, JumpFlatCurve(progress),Vector3.Lerp(-Vector3.forward, Vector3.zero, progress).z);
+            catModelGameObject.localPosition = new Vector3(0, JumpFlatCurve(progress), Vector3.Lerp(-Vector3.forward, Vector3.zero, progress).z);
             progress += animSpeed;
             yield return new WaitForEndOfFrame();
         }
@@ -243,11 +262,7 @@ public class CatMovement : MonoBehaviour
             }
         }
     }
-    void FaceDirection(Vector3 direction)
-    {
-        float angle = Vector3.SignedAngle(transform.forward, direction, Vector3.up);
-        transform.Rotate(Vector3.up, angle);
-    }
+    
     public void AttemptGrowth() {
         if (Physics.Raycast(transform.position + ((catHeight - 1) * Vector3.up), Vector3.up, 1, objects)) {
             Debug.Log("Cannot grow at current position");
