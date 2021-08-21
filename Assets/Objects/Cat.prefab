@@ -11,7 +11,6 @@ GameObject:
   - component: {fileID: 193441386154939531}
   - component: {fileID: 193441386154939530}
   - component: {fileID: 1747540604055366476}
-  - component: {fileID: 556738846}
   m_Layer: 0
   m_Name: Cat
   m_TagString: Untagged
@@ -75,25 +74,6 @@ MonoBehaviour:
   precomputeOutline: 0
   bakeKeys: []
   bakeValues: []
---- !u!95 &556738846
-Animator:
-  serializedVersion: 3
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 193441386154939533}
-  m_Enabled: 1
-  m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 012b2dfd83edb7d43bf44711bce1b1d7, type: 2}
-  m_CullingMode: 0
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!1 &9022634629069896326
 GameObject:
   m_ObjectHideFlags: 0

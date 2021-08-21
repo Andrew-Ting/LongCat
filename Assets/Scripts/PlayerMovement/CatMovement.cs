@@ -16,12 +16,13 @@ public class CatMovement : MonoBehaviour
     [SerializeField]
     LayerMask objects = (1 << 6 | 1 << 7);
     public event Action<Vector3> CatMoveAction;
-    private Animator catAnimator;
     private CameraController cameraController;
     private BlockManager blockManager;
     private Vector3 moveCatVector; // direction cat will move once it is ready for movement
     private bool areBlocksMoving = false;
     private Dictionary<DataClass.PowerUp, ItemCountController> itemCountController;
+    //for animation
+    private Transform catModelGameObject;
 
     public void MoveCat(DataClass.Directions dirIndex)
     {
@@ -121,14 +122,33 @@ public class CatMovement : MonoBehaviour
     }
 
     public void ReadyForMovement() { // called by BlockManager when all blocks have moved to fixed position
+        CollectAllBerriesAlong(moveCatVector);
         if (Vector3.Magnitude(moveCatVector) == 1) // do animation when only goes forward
         {
-            transform.GetChild(0).position = -Vector3.forward;
-            catAnimator.SetTrigger("Jump");
+            catModelGameObject.localPosition -= Vector3.forward;
+            StartCoroutine(CatMove());
         }
-        CollectAllBerriesAlong(moveCatVector);
+        else if(moveCatVector.y < 0 )//going down
+        {
+
+        }
+        else if(moveCatVector.y > 0)//going up
+        {
+
+        }
         transform.position += moveCatVector;
     }
+
+    IEnumerator CatMove()
+    {
+        while(Vector3.Distance(Vector3.zero, catModelGameObject.localPosition) > 0.05f)
+        {
+            catModelGameObject.localPosition = Vector3.Lerp(catModelGameObject.localPosition, Vector3.zero, 0.15f);
+            yield return new WaitForEndOfFrame();
+        }
+        catModelGameObject.localPosition = Vector3.zero;
+    }
+
     public void SetAreBlocksMoving(bool newState) {
         areBlocksMoving = newState;
     }
@@ -222,7 +242,7 @@ public class CatMovement : MonoBehaviour
     }
     void Awake()
     {
-        catAnimator = GetComponent<Animator>();
+        catModelGameObject = transform.GetChild(0);
         cameraController = FindObjectOfType<CameraController>();
         var powerupTypes = FindObjectsOfType<ItemCountController>(); 
         itemCountController = new Dictionary<DataClass.PowerUp, ItemCountController>();
