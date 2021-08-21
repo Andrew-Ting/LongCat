@@ -125,6 +125,10 @@ public class CatMovement : MonoBehaviour
 
     public void ReadyForMovement() { // called by BlockManager when all blocks have moved to fixed position
         CollectAllBerriesAlong(moveCatVector);
+
+        StopCoroutine(CatFlatMove());
+        StopCoroutine(CatDownMove());
+
         //TODO: make going up; make local position - movecatvector instead of doing it individually
         if (Vector3.Magnitude(moveCatVector) == 1) // do animation when only goes forward
         {
@@ -151,7 +155,7 @@ public class CatMovement : MonoBehaviour
         float progress = 0;
         while (progress <= 1)
         {
-            catModelGameObject.localPosition = new Vector3(0, JumpFlatCurve(progress),Vector3.Lerp(catModelGameObject.localPosition, Vector3.zero, progress).z);
+            catModelGameObject.localPosition = new Vector3(0, JumpFlatCurve(progress),Vector3.Lerp(-Vector3.forward, Vector3.zero, progress).z);
             progress += animSpeed;
             yield return new WaitForEndOfFrame();
         }
@@ -161,7 +165,7 @@ public class CatMovement : MonoBehaviour
         float progress = 0;
         while (progress <= 1)
         {
-            catModelGameObject.localPosition = new Vector3(0, JumpDownCurve(progress), Vector3.Lerp(catModelGameObject.localPosition, Vector3.zero, progress).z);
+            catModelGameObject.localPosition = new Vector3(0, JumpDownCurve(progress), Vector3.Lerp(-Vector3.forward, Vector3.zero, progress).z);
             progress += animSpeed;
             yield return new WaitForEndOfFrame();
         }
