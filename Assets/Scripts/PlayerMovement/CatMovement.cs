@@ -22,6 +22,9 @@ public class CatMovement : MonoBehaviour
     private bool areBlocksMoving = false;
     private Dictionary<DataClass.PowerUp, ItemCountController> itemCountController;
     //for animation
+    [Header("For animation")]
+    [SerializeField] float tolerance = 0.05f;
+    [SerializeField] float rigidity = 0.15f;
     private Transform catModelGameObject;
 
     public void MoveCat(DataClass.Directions dirIndex)
@@ -56,7 +59,7 @@ public class CatMovement : MonoBehaviour
             //hits something / something is blocking the way
             bool canClimb = false;
             Vector3 blockClimb = Vector3.zero;
-            for(int i = 0; i < catHeight - 1; i++)
+            for (int i = 0; i < catHeight - 1; i++)
             {
                 Vector3 blockCheck = transform.position + transform.forward + Vector3.up * i;
                 if (!Physics.Raycast(blockCheck, Vector3.up, 1, objects) && Physics.Raycast(blockCheck + Vector3.up, -Vector3.up, 1, objects))
@@ -66,7 +69,7 @@ public class CatMovement : MonoBehaviour
                     break;
                 }
             }
-            if(canClimb)
+            if (canClimb)
             {
                 Vector3 finalPos = newDirection * (catHeight + (int)transform.position.y - 1 - (int)blockClimb.y) - Vector3.up * ((int)transform.position.y - 1 - (int)blockClimb.y);
                 Vector3 catHeightClimb = new Vector3(transform.position.x, finalPos.y + transform.position.y, transform.position.z);
@@ -75,7 +78,7 @@ public class CatMovement : MonoBehaviour
                 {
                     if (Physics.Raycast(transform.position + finalPos, -Vector3.up, 1, objects)) // check if theres ground at final space 
                     {
-                        if(!Physics.Raycast(transform.position + finalPos, Vector3.up, catHeight -1, objects)) // height at final pos is enough
+                        if (!Physics.Raycast(transform.position + finalPos, Vector3.up, catHeight - 1, objects)) // height at final pos is enough
                         {
                             newMoveDirection = finalPos;
                         }
@@ -99,12 +102,12 @@ public class CatMovement : MonoBehaviour
                     newMoveDirection = Vector3.zero;
                     Debug.Log("Something is blocking on space to land on");
                 }
-            } 
+            }
             // if the block can't be climbed, can it be pushed?
             else
             {
 
-                if (PushConditionMet()) { 
+                if (PushConditionMet()) {
                     // can be pushed
                     GameObject catLandingPositionSameHeight = GetHitObjectAt(transform.position + transform.forward - Vector3.up, objects);
                     if (NotGoodLandingSpot(catLandingPositionSameHeight)) // if push conditions are met and player does not maintain its height, it must go down
@@ -118,32 +121,46 @@ public class CatMovement : MonoBehaviour
             }
         }
         moveCatVector = newMoveDirection;
-        CatMoveAction?.Invoke(newMoveDirection); 
+        CatMoveAction?.Invoke(newMoveDirection);
     }
 
     public void ReadyForMovement() { // called by BlockManager when all blocks have moved to fixed position
         CollectAllBerriesAlong(moveCatVector);
+        //TODO: make going up; make local position - movecatvector instead of doing it individually
         if (Vector3.Magnitude(moveCatVector) == 1) // do animation when only goes forward
         {
             catModelGameObject.localPosition -= Vector3.forward;
-            StartCoroutine(CatMove());
+            StartCoroutine(CatFlatMove());
         }
-        else if(moveCatVector.y < 0 )//going down
+        else if(Vector3.Magnitude(moveCatVector) > 1)
         {
-
-        }
-        else if(moveCatVector.y > 0)//going up
-        {
-
+            if (moveCatVector.y < 0)//going Down
+            {
+                catModelGameObject.localPosition -= Vector3.forward - Vector3.up;
+                StartCoroutine(CatDownMove());
+            }
+            else if (moveCatVector.y > 0)//going Up
+            {
+                
+            }
         }
         transform.position += moveCatVector;
     }
 
-    IEnumerator CatMove()
+    IEnumerator CatFlatMove()
     {
-        while(Vector3.Distance(Vector3.zero, catModelGameObject.localPosition) > 0.05f)
+        while (Vector3.Distance(Vector3.zero, catModelGameObject.localPosition) > tolerance)
         {
-            catModelGameObject.localPosition = Vector3.Lerp(catModelGameObject.localPosition, Vector3.zero, 0.15f);
+            catModelGameObject.localPosition = new Vector3(0, JumpFlatCurve(1f - Vector3.Distance(Vector3.zero, catModelGameObject.localPosition)),Vector3.Lerp(catModelGameObject.localPosition, Vector3.zero, rigidity).z);
+            yield return new WaitForEndOfFrame();
+        }
+        catModelGameObject.localPosition = Vector3.zero;
+    }
+    IEnumerator CatDownMove()
+    {
+        while (Vector3.Distance(Vector3.zero, catModelGameObject.localPosition) > tolerance)
+        {
+            catModelGameObject.localPosition = new Vector3(0, JumpDownCurve(1f+catModelGameObject.localPosition.z), Vector3.Lerp(catModelGameObject.localPosition, Vector3.zero, rigidity).z);
             yield return new WaitForEndOfFrame();
         }
         catModelGameObject.localPosition = Vector3.zero;
@@ -244,7 +261,7 @@ public class CatMovement : MonoBehaviour
     {
         catModelGameObject = transform.GetChild(0);
         cameraController = FindObjectOfType<CameraController>();
-        var powerupTypes = FindObjectsOfType<ItemCountController>(); 
+        var powerupTypes = FindObjectsOfType<ItemCountController>();
         itemCountController = new Dictionary<DataClass.PowerUp, ItemCountController>();
         for (int i = 0; i < powerupTypes.Length; i++) {
             ItemCountController currentUICount = powerupTypes[i];
@@ -275,4 +292,16 @@ public class CatMovement : MonoBehaviour
         blockManager = map.GetComponentInChildren<BlockManager>();
     }
 
+    private float JumpDownCurve(float t) // returns y-axis given t from 0 to 1
+    {
+        if (t < 0) return 0;
+        else if (t > 1) return -1;
+        else return -0.95f * t * (1.2013f * t - 0.7f) * (1.1f * t + 1f) + 1;
+    }
+
+    private float JumpFlatCurve(float t)
+    {
+        if (t < 0 || t > 1) return 0;
+        else return -1 * (t - 1) * t;
+    }
 }
