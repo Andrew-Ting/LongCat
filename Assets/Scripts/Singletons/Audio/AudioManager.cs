@@ -27,7 +27,7 @@ public class AudioManager : MonoBehaviour
             s.source = gameObject.AddComponent<AudioSource>();
             s.source.clip = s.clip;
             s.source.loop = s.loop;
-            s.source.volume = PlayerPrefs.GetFloat(s.type.ToString(), 1f);
+            s.source.volume = PlayerPrefs.GetFloat(s.type.ToString(), 1f) * s.initialVolume;
             s.source.playOnAwake = false;
         }
     }
@@ -50,7 +50,7 @@ public class AudioManager : MonoBehaviour
                 Stop();
                 currentBGM = s;
             }
-            s.source.volume = PlayerPrefs.GetFloat(s.type.ToString(), 1f);
+            s.source.volume = PlayerPrefs.GetFloat(s.type.ToString(), 1f) * s.initialVolume;
             s.source.Play();
             Debug.Log("now playing: " + s.name);
         }
@@ -97,7 +97,7 @@ public class AudioManager : MonoBehaviour
 
     public void UpdateBGMVolume()
     {
-        currentBGM.source.volume = PlayerPrefs.GetFloat("BGM", 1f);
+        currentBGM.source.volume = PlayerPrefs.GetFloat("BGM", 1f) * currentBGM.initialVolume;
     }
 
     IEnumerator PlayTemp(string name) // only for SFX
@@ -110,7 +110,7 @@ public class AudioManager : MonoBehaviour
                 if (s.type == SoundType.SFX)
                 {
                     StartCoroutine(slowPause(0.2f));
-                    s.source.volume = PlayerPrefs.GetFloat("SFX", 1f);
+                    s.source.volume = PlayerPrefs.GetFloat("SFX", 1f) * s.initialVolume;
                     s.source.Play();
                     while (s.source.isPlaying)
                     {
@@ -146,7 +146,7 @@ public class AudioManager : MonoBehaviour
                 currentBGM.source.Play();
                 while (t < timeMax)
                 {
-                    currentBGM.source.volume = t / timeMax * PlayerPrefs.GetFloat("BGM", 1f);
+                    currentBGM.source.volume = t / timeMax * PlayerPrefs.GetFloat("BGM", 1f) * currentBGM.initialVolume;
 
                     t += partition;
                     yield return new WaitForSecondsRealtime(partition);
@@ -174,7 +174,7 @@ public class AudioManager : MonoBehaviour
 
             while (t < timeMax)
             {
-                currentBGM.source.volume = (1 - t / timeMax) * PlayerPrefs.GetFloat("BGM", 1f);
+                currentBGM.source.volume = (1 - t / timeMax) * PlayerPrefs.GetFloat("BGM", 1f) * currentBGM.initialVolume;
 
                 t += partition;
                 yield return new WaitForSecondsRealtime(partition);
@@ -209,8 +209,8 @@ public class AudioManager : MonoBehaviour
                         //Debug.Log("currentBGM " + t + "\ntransition" + s.volume + " \noldSong" + currentBGM.volume);
                         //get volume for each. for each partition, increase volume of sound s, decrease volume of current bgm
 
-                        s.source.volume = t / transitionMax * PlayerPrefs.GetFloat("BGM", 1f);
-                        currentBGM.source.volume = (1 - t / transitionMax) * PlayerPrefs.GetFloat("BGM", 1f);
+                        s.source.volume = t / transitionMax * PlayerPrefs.GetFloat("BGM", 1f) * s.initialVolume;
+                        currentBGM.source.volume = (1 - t / transitionMax) * PlayerPrefs.GetFloat("BGM", 1f) * currentBGM.initialVolume;
 
                         t += partition;
                         yield return new WaitForSecondsRealtime(partition);
@@ -229,7 +229,7 @@ public class AudioManager : MonoBehaviour
                 s.source.Play();
                 while (t < transitionMax)
                 {
-                    s.source.volume = t / transitionMax * PlayerPrefs.GetFloat("BGM", 1f);
+                    s.source.volume = t / transitionMax * PlayerPrefs.GetFloat("BGM", 1f) * s.initialVolume;
                     t += partition;
                     yield return new WaitForSecondsRealtime(partition);
                 }

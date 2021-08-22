@@ -10087,12 +10087,27 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   sounds:
-  - name: TestBGM
+  - name: MenuBGM
     clip: {fileID: 8300000, guid: e72aa89795c45fd4a87fcb968d270beb, type: 3}
     type: 1
     loop: 1
     source: {fileID: 0}
     volume: 0
+    initialVolume: 1
+  - name: World0Theme
+    clip: {fileID: 8300000, guid: 811473dadf729bc43bfd9cc2222b36be, type: 3}
+    type: 1
+    loop: 1
+    source: {fileID: 0}
+    volume: 0
+    initialVolume: 0.583
+  - name: World1Theme
+    clip: {fileID: 8300000, guid: beb590caf6f85884aaa873e1f67e1839, type: 3}
+    type: 1
+    loop: 1
+    source: {fileID: 0}
+    volume: 0
+    initialVolume: 1
 --- !u!114 &1158193291
 MonoBehaviour:
   m_ObjectHideFlags: 0
