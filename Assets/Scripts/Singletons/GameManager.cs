@@ -7,6 +7,7 @@ public class GameManager : MonoBehaviour
     [HideInInspector] public LevelData levelData;
     [SerializeField] CatMovement cat;
     private bool fished;
+    private bool fishCollected;
 
     LevelCollection levelCollection;
     // Start is called before the first frame update
@@ -50,7 +51,7 @@ public class GameManager : MonoBehaviour
             {
                 fished = false;
             }
-
+            fishCollected = false;
         }
     }
 
@@ -65,9 +66,15 @@ public class GameManager : MonoBehaviour
     public void CollectFish()
     {
         fished = true;
+        fishCollected = true;
     }
     public bool IsFished()
     {
         return fished;
+    }
+
+    public bool FishCollectedThisRound()
+    {
+        return fishCollected;
     }
 }
