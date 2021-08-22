@@ -7,18 +7,16 @@ public class Fish : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        
+        gameObject.SetActive(!FindObjectOfType<GameManager>().IsFished());
     }
-
-    // Update is called once per frame
-    void Update()
+    
+    public void CollectFish() //call this function when fish is gonna be collected
     {
-        
-    }
-
-    void OnCollect() //call this function when fish is gonna be collected
-    {
-        collected = true;
-        transform.GetComponent<Animator>().SetTrigger("Fished");
+        if(!collected)
+        {
+            collected = true;
+            transform.GetComponent<Animator>().SetTrigger("Fished");
+            FindObjectOfType<GameManager>().CollectFish();
+        }
     }
 }

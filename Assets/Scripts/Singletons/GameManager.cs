@@ -6,6 +6,7 @@ public class GameManager : MonoBehaviour
     public GameObject WinUI;
     [HideInInspector] public LevelData levelData;
     [SerializeField] CatMovement cat;
+    private bool fished;
 
     LevelCollection levelCollection;
     // Start is called before the first frame update
@@ -35,14 +36,32 @@ public class GameManager : MonoBehaviour
             cat.SetCatHeight(levelData.catStartingHeight);
             cat.gameObject.SetActive(true);
             cat.StartSetObject();
+            if (FindObjectOfType<PlayerManager>().IsFished(levelData.id))
+            {
+                fished = true;
+                //remove the fish;
+            }
+            else
+            {
+                fished = false;
+            }
         }
     }
 
     public void PlayerWin()
     {
-
         WinUI.SetActive(true);
         LevelLoader.SaveNextGame(levelData.id);
         FindObjectOfType<PlayerManager>().LevelFinished(levelData.id);
+        if (fished) FindObjectOfType<PlayerManager>().LevelFished(levelData.id);
+    }
+
+    public void CollectFish()
+    {
+        fished = true;
+    }
+    public bool IsFished()
+    {
+        return fished;
     }
 }

@@ -12,6 +12,8 @@ public class CatMovement : MonoBehaviour
     [SerializeField]
     LayerMask powerupLayer = (1 << 8);
     [SerializeField]
+    LayerMask fishLayer = (1 << 10);
+    [SerializeField]
     int blocksLayerNumber = 7;
     [SerializeField]
     LayerMask objects = (1 << 6 | 1 << 7);
@@ -21,6 +23,7 @@ public class CatMovement : MonoBehaviour
     private Vector3 moveCatVector; // direction cat will move once it is ready for movement
     private bool areBlocksMoving = false;
     private Dictionary<DataClass.PowerUp, ItemCountController> itemCountController;
+    private GameManager gameManager;
     //for animation
     [Header("For animation")]
     [SerializeField]private float animSpeed = 0.05f;
@@ -245,6 +248,13 @@ public class CatMovement : MonoBehaviour
                 itemCountController[hitPowerup.transform.gameObject.GetComponent<PowerupController>().GetPowerupType()].AddCountOfItem();
                 hitPowerup.transform.gameObject.GetComponent<PowerupController>().SelfDestruct();
             }
+            if(!gameManager.IsFished())
+            {
+                if(Physics.Raycast(transform.position + Vector3.up * (catMovementDirection.y + 1) + Vector3.right * (posWithDirection), -Vector3.up, out hitPowerup, 1, fishLayer))
+                {
+                    hitPowerup.transform.GetComponent<Fish>().CollectFish();
+                }
+            }
         }
         for (int pos = 0; pos < Mathf.Abs(catMovementDirection.z); pos++) { // collect all powerups along the z offset
             int posWithDirection = pos * (catMovementDirection.z > 0 ? 1 : -1);
@@ -253,12 +263,26 @@ public class CatMovement : MonoBehaviour
                 itemCountController[hitPowerup.transform.gameObject.GetComponent<PowerupController>().GetPowerupType()].AddCountOfItem();
                 hitPowerup.transform.gameObject.GetComponent<PowerupController>().SelfDestruct();
             }
+            if (!gameManager.IsFished())
+            {
+                if (Physics.Raycast(transform.position + Vector3.up * (catMovementDirection.y + 1) + Vector3.forward * posWithDirection, -Vector3.up, out hitPowerup, 1, fishLayer))
+                {
+                    hitPowerup.transform.GetComponent<Fish>().CollectFish();
+                }
+            }
         }
         for (int pos = 0; pos < catHeight; pos++) { // collect all powerups along the vertical axis the cat will stand at
             RaycastHit hitPowerup;
             if (Physics.Raycast(transform.position + catMovementDirection + Vector3.up * (pos - 1), Vector3.up, out hitPowerup, 1, powerupLayer)) {
                 itemCountController[hitPowerup.transform.gameObject.GetComponent<PowerupController>().GetPowerupType()].AddCountOfItem();
                 hitPowerup.transform.gameObject.GetComponent<PowerupController>().SelfDestruct();
+            }
+            if (!gameManager.IsFished())
+            {
+                if (Physics.Raycast(transform.position + catMovementDirection + Vector3.up * (pos - 1), Vector3.up, out hitPowerup, 1, fishLayer))
+                {
+                    hitPowerup.transform.GetComponent<Fish>().CollectFish();
+                }
             }
         }
     }
@@ -287,6 +311,7 @@ public class CatMovement : MonoBehaviour
             ItemCountController currentUICount = powerupTypes[i];
             itemCountController[currentUICount.GetPowerupType()] = currentUICount;
         }
+        gameManager = FindObjectOfType<GameManager>();
     }
 
     public void StartSetObject()
