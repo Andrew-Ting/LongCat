@@ -15,8 +15,14 @@ public class Fish : MonoBehaviour
         if(!collected)
         {
             collected = true;
+            transform.GetChild(0).gameObject.SetActive(true);
             transform.GetComponent<Animator>().SetTrigger("Fished");
             FindObjectOfType<GameManager>().CollectFish();
         }
+    }
+
+    public void RemoveFish()
+    {
+        gameObject.SetActive(false);
     }
 }
