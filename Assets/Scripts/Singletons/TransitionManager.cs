@@ -100,6 +100,8 @@ public class TransitionManager : MonoBehaviour
         yield return new WaitForEndOfFrame();
         operation.allowSceneActivation = true;
         transitions[transitionID].animator.SetTrigger("Switch");
+        yield return new WaitForSecondsRealtime(2);
+        transitions[transitionID].animator.gameObject.SetActive(false);
         currentTransitionID = -1;
     }
 

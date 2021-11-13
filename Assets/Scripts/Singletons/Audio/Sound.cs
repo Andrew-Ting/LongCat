@@ -14,6 +14,9 @@ public class Sound
     [HideInInspector]
     public float volume;
 
+    [Range(0,1)]
+    public float initialVolume;
+
     public override string ToString()
     {
         return name;

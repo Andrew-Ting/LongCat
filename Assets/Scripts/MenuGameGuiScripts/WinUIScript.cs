@@ -7,6 +7,7 @@ public class WinUIScript : MonoBehaviour
     void Start()
     {
         gameManager = FindObjectOfType<GameManager>();
+        GetComponent<Animator>().SetBool("HasFish", gameManager.FishCollectedThisRound());
     }
 
     public void ReturnHome()

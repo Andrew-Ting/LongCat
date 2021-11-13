@@ -12,6 +12,8 @@ public class CatMovement : MonoBehaviour
     [SerializeField]
     LayerMask powerupLayer = (1 << 8);
     [SerializeField]
+    LayerMask fishLayer = (1 << 10);
+    [SerializeField]
     int blocksLayerNumber = 7;
     [SerializeField]
     LayerMask objects = (1 << 6 | 1 << 7);
@@ -21,6 +23,13 @@ public class CatMovement : MonoBehaviour
     private Vector3 moveCatVector; // direction cat will move once it is ready for movement
     private bool areBlocksMoving = false;
     private Dictionary<DataClass.PowerUp, ItemCountController> itemCountController;
+    private GameManager gameManager;
+    //for animation
+    [Header("For animation")]
+    [SerializeField]private float animSpeed = 0.05f;
+    [SerializeField] private float rotateSpeed = 0.04f;
+    private Transform catModelGameObject;
+
     public void MoveCat(DataClass.Directions dirIndex)
     {
         if (areBlocksMoving || Time.timeScale == 0) // you don't want the cat to be able to move as blocks are falling; opens a can of worms in logic
@@ -28,7 +37,8 @@ public class CatMovement : MonoBehaviour
         int p = ((int)dirIndex + (int)cameraController.GetCameraView()) % 4;
         int dir = p < 2 ? 1 : -1;
         Vector3 newDirection = p % 2 == 0 ? dir * Vector3.forward : dir * Vector3.right;
-        FaceDirection(newDirection);
+        StopCoroutine(CatRotate(newDirection));
+        StartCoroutine(CatRotate(newDirection));
         Vector3 newMoveDirection = newDirection; // this is relative
         if (!Physics.Raycast(transform.position + Vector3.up * catHeight + transform.forward, -Vector3.up, catHeight, objects)) //nothing is in front of it
         {
@@ -53,7 +63,7 @@ public class CatMovement : MonoBehaviour
             //hits something / something is blocking the way
             bool canClimb = false;
             Vector3 blockClimb = Vector3.zero;
-            for(int i = 0; i < catHeight - 1; i++)
+            for (int i = 0; i < catHeight - 1; i++)
             {
                 Vector3 blockCheck = transform.position + transform.forward + Vector3.up * i;
                 if (!Physics.Raycast(blockCheck, Vector3.up, 1, objects) && Physics.Raycast(blockCheck + Vector3.up, -Vector3.up, 1, objects))
@@ -63,7 +73,7 @@ public class CatMovement : MonoBehaviour
                     break;
                 }
             }
-            if(canClimb)
+            if (canClimb)
             {
                 Vector3 finalPos = newDirection * (catHeight + (int)transform.position.y - 1 - (int)blockClimb.y) - Vector3.up * ((int)transform.position.y - 1 - (int)blockClimb.y);
                 Vector3 catHeightClimb = new Vector3(transform.position.x, finalPos.y + transform.position.y, transform.position.z);
@@ -72,7 +82,7 @@ public class CatMovement : MonoBehaviour
                 {
                     if (Physics.Raycast(transform.position + finalPos, -Vector3.up, 1, objects)) // check if theres ground at final space 
                     {
-                        if(!Physics.Raycast(transform.position + finalPos, Vector3.up, catHeight -1, objects)) // height at final pos is enough
+                        if (!Physics.Raycast(transform.position + finalPos, Vector3.up, catHeight - 1, objects)) // height at final pos is enough
                         {
                             newMoveDirection = finalPos;
                         }
@@ -96,12 +106,12 @@ public class CatMovement : MonoBehaviour
                     newMoveDirection = Vector3.zero;
                     Debug.Log("Something is blocking on space to land on");
                 }
-            } 
+            }
             // if the block can't be climbed, can it be pushed?
             else
             {
 
-                if (PushConditionMet()) { 
+                if (PushConditionMet()) {
                     // can be pushed
                     GameObject catLandingPositionSameHeight = GetHitObjectAt(transform.position + transform.forward - Vector3.up, objects);
                     if (NotGoodLandingSpot(catLandingPositionSameHeight)) // if push conditions are met and player does not maintain its height, it must go down
@@ -120,8 +130,69 @@ public class CatMovement : MonoBehaviour
 
     public void ReadyForMovement() { // called by BlockManager when all blocks have moved to fixed position
         CollectAllBerriesAlong(moveCatVector);
+
+        StopCoroutine(CatFlatMove());
+        StopCoroutine(CatDownMove());
+
+        //TODO: make going up; make local position - movecatvector instead of doing it individually
+        if (Vector3.Magnitude(moveCatVector) == 1) // do animation when only goes forward
+        {
+            catModelGameObject.localPosition -= Vector3.forward;
+            StartCoroutine(CatFlatMove());
+        }
+        else if(Vector3.Magnitude(moveCatVector) > 1)
+        {
+            if (moveCatVector.y < 0)//going Down
+            {
+                catModelGameObject.localPosition -= Vector3.forward - Vector3.up;
+                StartCoroutine(CatDownMove());
+            }
+            else if (moveCatVector.y > 0)//going Up
+            {
+                
+            }
+        }
         transform.position += moveCatVector;
     }
+
+    IEnumerator CatRotate(Vector3 direction)
+    {
+        float angle = Vector3.SignedAngle(transform.forward, direction, Vector3.up);
+        transform.Rotate(Vector3.up, angle);
+        catModelGameObject.Rotate(Vector3.up, -angle);
+        float newAngle = angle * rotateSpeed;
+        float progress = 0;
+        while(progress <= 1)
+        {
+            catModelGameObject.transform.Rotate(Vector3.up, newAngle);
+            progress += rotateSpeed;
+            yield return new WaitForEndOfFrame();
+        }
+        angle = Vector3.SignedAngle(transform.forward, direction, Vector3.up);
+        catModelGameObject.transform.Rotate(Vector3.up, angle);
+    }
+
+    IEnumerator CatFlatMove()
+    {
+        float progress = 0;
+        while (progress <= 1)
+        {
+            catModelGameObject.localPosition = new Vector3(0, JumpFlatCurve(progress), Vector3.Lerp(-Vector3.forward, Vector3.zero, progress).z);
+            progress += animSpeed;
+            yield return new WaitForEndOfFrame();
+        }
+    }
+    IEnumerator CatDownMove()
+    {
+        float progress = 0;
+        while (progress <= 1)
+        {
+            catModelGameObject.localPosition = new Vector3(0, JumpDownCurve(progress), Vector3.Lerp(-Vector3.forward, Vector3.zero, progress).z);
+            progress += animSpeed;
+            yield return new WaitForEndOfFrame();
+        }
+    }
+
     public void SetAreBlocksMoving(bool newState) {
         areBlocksMoving = newState;
     }
@@ -177,6 +248,13 @@ public class CatMovement : MonoBehaviour
                 itemCountController[hitPowerup.transform.gameObject.GetComponent<PowerupController>().GetPowerupType()].AddCountOfItem();
                 hitPowerup.transform.gameObject.GetComponent<PowerupController>().SelfDestruct();
             }
+            if(!gameManager.IsFished())
+            {
+                if(Physics.Raycast(transform.position + Vector3.up * (catMovementDirection.y + 1) + Vector3.right * (posWithDirection), -Vector3.up, out hitPowerup, 1, fishLayer))
+                {
+                    hitPowerup.transform.GetComponent<Fish>().CollectFish();
+                }
+            }
         }
         for (int pos = 0; pos < Mathf.Abs(catMovementDirection.z); pos++) { // collect all powerups along the z offset
             int posWithDirection = pos * (catMovementDirection.z > 0 ? 1 : -1);
@@ -185,6 +263,13 @@ public class CatMovement : MonoBehaviour
                 itemCountController[hitPowerup.transform.gameObject.GetComponent<PowerupController>().GetPowerupType()].AddCountOfItem();
                 hitPowerup.transform.gameObject.GetComponent<PowerupController>().SelfDestruct();
             }
+            if (!gameManager.IsFished())
+            {
+                if (Physics.Raycast(transform.position + Vector3.up * (catMovementDirection.y + 1) + Vector3.forward * posWithDirection, -Vector3.up, out hitPowerup, 1, fishLayer))
+                {
+                    hitPowerup.transform.GetComponent<Fish>().CollectFish();
+                }
+            }
         }
         for (int pos = 0; pos < catHeight; pos++) { // collect all powerups along the vertical axis the cat will stand at
             RaycastHit hitPowerup;
@@ -192,13 +277,16 @@ public class CatMovement : MonoBehaviour
                 itemCountController[hitPowerup.transform.gameObject.GetComponent<PowerupController>().GetPowerupType()].AddCountOfItem();
                 hitPowerup.transform.gameObject.GetComponent<PowerupController>().SelfDestruct();
             }
+            if (!gameManager.IsFished())
+            {
+                if (Physics.Raycast(transform.position + catMovementDirection + Vector3.up * (pos - 1), Vector3.up, out hitPowerup, 1, fishLayer))
+                {
+                    hitPowerup.transform.GetComponent<Fish>().CollectFish();
+                }
+            }
         }
     }
-    void FaceDirection(Vector3 direction)
-    {
-        float angle = Vector3.SignedAngle(transform.forward, direction, Vector3.up);
-        transform.Rotate(Vector3.up, angle);
-    }
+    
     public void AttemptGrowth() {
         if (Physics.Raycast(transform.position + ((catHeight - 1) * Vector3.up), Vector3.up, 1, objects)) {
             Debug.Log("Cannot grow at current position");
@@ -215,13 +303,17 @@ public class CatMovement : MonoBehaviour
     }
     void Awake()
     {
+        gameManager = FindObjectOfType<GameManager>();
         cameraController = FindObjectOfType<CameraController>();
-        var powerupTypes = FindObjectsOfType<ItemCountController>(); 
+        ItemCountController[] powerupTypes = FindObjectsOfType<ItemCountController>();
+        catModelGameObject = transform.GetChild(0);
+
         itemCountController = new Dictionary<DataClass.PowerUp, ItemCountController>();
         for (int i = 0; i < powerupTypes.Length; i++) {
             ItemCountController currentUICount = powerupTypes[i];
             itemCountController[currentUICount.GetPowerupType()] = currentUICount;
         }
+        
     }
 
     public void StartSetObject()
@@ -247,4 +339,16 @@ public class CatMovement : MonoBehaviour
         blockManager = map.GetComponentInChildren<BlockManager>();
     }
 
+    private float JumpDownCurve(float t) // returns y-axis given t from 0 to 1
+    {
+        if (t < 0) return 0;
+        else if (t > 1) return -1;
+        else return -0.95f * t * (1.2013f * t - 0.7f) * (1.1f * t + 1f) + 1;
+    }
+
+    private float JumpFlatCurve(float t)
+    {
+        if (t < 0 || t > 1) return 0;
+        else return -1 * (t - 1) * t;
+    }
 }

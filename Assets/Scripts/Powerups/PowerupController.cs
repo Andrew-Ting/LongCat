@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class PowerupController : MonoBehaviour
@@ -10,6 +8,12 @@ public class PowerupController : MonoBehaviour
         return powerupType;
     }
     public void SelfDestruct() {
+
+        transform.GetComponent<Animator>().SetTrigger("Collect");
+    }
+
+    public void DestroyGameObject()
+    {
         Destroy(gameObject);
     }
 }
