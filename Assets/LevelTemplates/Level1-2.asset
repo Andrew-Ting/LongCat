@@ -10,11 +10,11 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b270c7205cec1cd4084040c7c17c4208, type: 3}
-  m_Name: Test Level 3
+  m_Name: Level1-2
   m_EditorClassIdentifier: 
-  id: 0
-  worldNumber: 0
-  levelNumber: 3
-  catStartingPos: {x: 0, y: 1, z: 0}
+  id: 1
+  worldNumber: 1
+  levelNumber: 2
+  catStartingPos: {x: 0, y: 1, z: 1}
   catStartingHeight: 2
   notes: 

@@ -9,9 +9,9 @@ public class LevelData : ScriptableObject
     [Header("Level Detail")]
     [HideInInspector]
     public int id;
-    [Min(0), Tooltip("starts at 0")]
+    [Min(0), Tooltip("starts at 1")]
     public int worldNumber;
-    [Min(0), Tooltip("starts at 0")]
+    [Min(0), Tooltip("starts at 1")]
     public int levelNumber;
 
     [Header("Level inside")]
@@ -26,11 +26,11 @@ public class LevelData : ScriptableObject
     public string GetWorldLevelString(bool world, bool level)
     {
         if (world && level)
-            return (worldNumber + 1) + " - " + (levelNumber + 1);
+            return (worldNumber) + " - " + (levelNumber);
         else if (world)
-            return (worldNumber + 1).ToString();
+            return (worldNumber).ToString();
         else if (level)
-            return (levelNumber + 1).ToString();
+            return (levelNumber).ToString();
         else
             return "-1";
     }
