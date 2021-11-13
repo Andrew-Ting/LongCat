@@ -149,7 +149,7 @@ public class CatMovement : MonoBehaviour
             }
             else if (moveCatVector.y > 0)//going Up
             {
-                
+                //add animation here for when going up @andrew
             }
         }
         transform.position += moveCatVector;
@@ -318,7 +318,6 @@ public class CatMovement : MonoBehaviour
 
     public void StartSetObject()
     {
-        //blockManager = GameObject.Find("Map").GetComponentInChildren<BlockManager>();
         StartCoroutine(SetObject());
     }
 
@@ -333,7 +332,6 @@ public class CatMovement : MonoBehaviour
         while (map == null)
         {
             map = GameObject.Find("Map");
-            //blockManager = FindObjectOfType<BlockManager>();
             yield return new WaitForEndOfFrame();
         }
         blockManager = map.GetComponentInChildren<BlockManager>();
