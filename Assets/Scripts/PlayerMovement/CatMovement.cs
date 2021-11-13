@@ -303,15 +303,17 @@ public class CatMovement : MonoBehaviour
     }
     void Awake()
     {
-        catModelGameObject = transform.GetChild(0);
+        gameManager = FindObjectOfType<GameManager>();
         cameraController = FindObjectOfType<CameraController>();
-        var powerupTypes = FindObjectsOfType<ItemCountController>();
+        ItemCountController[] powerupTypes = FindObjectsOfType<ItemCountController>();
+        catModelGameObject = transform.GetChild(0);
+
         itemCountController = new Dictionary<DataClass.PowerUp, ItemCountController>();
         for (int i = 0; i < powerupTypes.Length; i++) {
             ItemCountController currentUICount = powerupTypes[i];
             itemCountController[currentUICount.GetPowerupType()] = currentUICount;
         }
-        gameManager = FindObjectOfType<GameManager>();
+        
     }
 
     public void StartSetObject()
