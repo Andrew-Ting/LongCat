@@ -201,7 +201,7 @@ public class CatMovement : MonoBehaviour
         hits = Physics.RaycastAll(transform.position + Vector3.up * catHeight + transform.forward, -Vector3.up, catHeight, blocksLayer);
         if (hits.Length != catHeight) // the blocks don't span the height of the player
             return false;
-        if (Physics.Raycast(transform.position + Vector3.up * (catHeight - 1) + transform.forward, Vector3.up, blocksLayer)) // the block structure is taller than player
+        if (Physics.Raycast(transform.position + Vector3.up * (catHeight - 1) + transform.forward, Vector3.up, 1, blocksLayer))  // the block structure is taller than player
             return false;
         List<GameObject> directlyPushedBlocksList = new List<GameObject>();
         foreach (RaycastHit hit in hits) {
