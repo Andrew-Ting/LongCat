@@ -150,7 +150,7 @@ public class CatMovement : MonoBehaviour
             }
             else if (moveCatVector.y > 0)//going Up
             {
-                catModelGameObject.localPosition -= (new Vector3(0, moveCatVector.y, 0) + Vector3.forward * moveCatVector.x);
+                transform.position -= moveCatVector;
                 catModelGameObject.GetChild(catHeight - 1).GetComponent<Animator>().SetTrigger("Climb" + moveCatVector.y);
                 StartCoroutine(ResetLocalPositionAfterClimbAnimation());
             }
@@ -159,7 +159,7 @@ public class CatMovement : MonoBehaviour
     }
     IEnumerator ResetLocalPositionAfterClimbAnimation() {
         yield return new WaitForSeconds(3.292f);
-        catModelGameObject.localPosition += (new Vector3(0, moveCatVector.y, 0) + Vector3.forward * moveCatVector.x);
+        transform.position += moveCatVector;
     }
     IEnumerator CatRotate(Vector3 direction)
     {
