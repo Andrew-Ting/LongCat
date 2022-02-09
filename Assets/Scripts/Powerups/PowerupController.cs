@@ -11,7 +11,9 @@ public class PowerupController : MonoBehaviour
 
         transform.GetComponent<Animator>().SetTrigger("Collect");
     }
-
+    public void DestroyCollider() {
+        Destroy(transform.GetComponent<CapsuleCollider>());
+    }
     public void DestroyGameObject()
     {
         Destroy(gameObject);

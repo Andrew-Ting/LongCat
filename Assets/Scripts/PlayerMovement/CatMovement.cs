@@ -120,6 +120,7 @@ public class CatMovement : MonoBehaviour
                 }
                 else {
                     newMoveDirection = Vector3.zero;
+                    catModelGameObject.GetChild(catHeight - 1).GetComponent<Animator>()?.SetTrigger("ShakeHead");
                     blockManager.SetAllBlockMovableStateTo(false);
                 }
             }
@@ -149,12 +150,17 @@ public class CatMovement : MonoBehaviour
             }
             else if (moveCatVector.y > 0)//going Up
             {
-                
+                transform.position -= moveCatVector;
+                catModelGameObject.GetChild(catHeight - 1).GetComponent<Animator>().SetTrigger("Climb" + moveCatVector.y);
+                StartCoroutine(ResetLocalPositionAfterClimbAnimation());
             }
         }
         transform.position += moveCatVector;
     }
-
+    IEnumerator ResetLocalPositionAfterClimbAnimation() {
+        yield return new WaitForSeconds(3.292f);
+        transform.position += moveCatVector;
+    }
     IEnumerator CatRotate(Vector3 direction)
     {
         float angle = Vector3.SignedAngle(transform.forward, direction, Vector3.up);
@@ -294,12 +300,12 @@ public class CatMovement : MonoBehaviour
         }
         bool growthSuccess = itemCountController[DataClass.PowerUp.Grow].AttemptDeductCountOfItem();
         if (growthSuccess)
-            catHeight++;
+            SetCatHeight(catHeight + 1);
     }
     public void AttemptShrink() {
         bool shrinkSuccess = itemCountController[DataClass.PowerUp.Shrink].AttemptDeductCountOfItem();
         if (shrinkSuccess)
-            catHeight--;
+            SetCatHeight(catHeight - 1);
     }
     void Awake()
     {
@@ -313,7 +319,7 @@ public class CatMovement : MonoBehaviour
             ItemCountController currentUICount = powerupTypes[i];
             itemCountController[currentUICount.GetPowerupType()] = currentUICount;
         }
-        
+        SetCatHeight(catHeight); 
     }
 
     public void StartSetObject()
@@ -322,9 +328,17 @@ public class CatMovement : MonoBehaviour
         StartCoroutine(SetObject());
     }
 
-    public void SetCatHeight(int newHeight) //only done on the start
+    public void SetCatHeight(int newHeight) // changes height and corresponding cat mesh
     {
         catHeight = newHeight;
+        Transform catModels = transform.GetChild(0);
+        int catHeights = catModels.childCount;
+        for (int i = 0; i < catHeights; i++) {
+            if (i + 1 == catHeight) {
+                catModelGameObject.GetChild(i).gameObject.SetActive(true);
+            }
+            else catModelGameObject.GetChild(i).gameObject.SetActive(false);
+        }
     }
 
     IEnumerator SetObject()
