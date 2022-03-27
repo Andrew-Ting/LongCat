@@ -13,8 +13,13 @@ MonoBehaviour:
   m_Name: Level1-3
   m_EditorClassIdentifier: 
   id: 2
+<<<<<<< Updated upstream:Assets/LevelTemplates/Level1-3.asset
   worldNumber: 1
   levelNumber: 3
+=======
+  worldNumber: 0
+  levelNumber: 0
+>>>>>>> Stashed changes:Assets/LevelTemplates/Test Level 2.asset
   catStartingPos: {x: 0, y: 0, z: 0}
   catStartingHeight: 1
   notes: 
