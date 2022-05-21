@@ -22,6 +22,7 @@ public class CatMovement : MonoBehaviour
     private BlockManager blockManager;
     private Vector3 moveCatVector; // direction cat will move once it is ready for movement
     private bool areBlocksMoving = false;
+    private bool isCatClimbing = false;
     private Dictionary<DataClass.PowerUp, ItemCountController> itemCountController;
     private GameManager gameManager;
     //for animation
@@ -30,9 +31,10 @@ public class CatMovement : MonoBehaviour
     [SerializeField] private float rotateSpeed = 0.04f;
     private Transform catModelGameObject;
 
+    [SerializeField] private float climbAnimationTime = 4f;
     public void MoveCat(DataClass.Directions dirIndex)
     {
-        if (areBlocksMoving || Time.timeScale == 0) // you don't want the cat to be able to move as blocks are falling; opens a can of worms in logic
+        if (areBlocksMoving || Time.timeScale == 0 || isCatClimbing) // you don't want the cat to be able to move as blocks are falling; opens a can of worms in logic
             return;
         int p = ((int)dirIndex + (int)cameraController.GetCameraView()) % 4;
         int dir = p < 2 ? 1 : -1;
@@ -151,6 +153,8 @@ public class CatMovement : MonoBehaviour
             else if (moveCatVector.y > 0)//going Up
             {
                 transform.position -= moveCatVector;
+                // begin climb animation
+                isCatClimbing = true;
                 catModelGameObject.GetChild(catHeight - 1).GetComponent<Animator>().SetTrigger("Climb" + moveCatVector.y);
                 StartCoroutine(ResetLocalPositionAfterClimbAnimation());
             }
@@ -158,7 +162,8 @@ public class CatMovement : MonoBehaviour
         transform.position += moveCatVector;
     }
     IEnumerator ResetLocalPositionAfterClimbAnimation() {
-        yield return new WaitForSeconds(3.292f);
+        yield return new WaitForSeconds(climbAnimationTime);
+        isCatClimbing = false;
         transform.position += moveCatVector;
     }
     IEnumerator CatRotate(Vector3 direction)
