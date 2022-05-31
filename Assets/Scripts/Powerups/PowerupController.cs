@@ -15,7 +15,7 @@ public class PowerupController : MonoBehaviour
     }
     public void DestroyGameObject()
     {
-        gameObject.SetActive(false);
+        gameObject.SetActive(false); // sike; the object is not actually destroyed bc it can be revived with an undo
     }
     public void ReviveObject()
     {
