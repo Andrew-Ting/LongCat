@@ -8,7 +8,6 @@ public class PowerupController : MonoBehaviour
         return powerupType;
     }
     public void SelfDestruct() {
-        Debug.Log("COLLECTED");
         transform.GetComponent<Animator>().SetTrigger("Collect");
     }
     public void DestroyCollider() {
@@ -16,12 +15,10 @@ public class PowerupController : MonoBehaviour
     }
     public void DestroyGameObject()
     {
-        Debug.Log("DESTROYING POWERUP");
         gameObject.SetActive(false);
     }
     public void ReviveObject()
     {
-        Debug.Log("Reviving");
         gameObject.SetActive(true);
         transform.GetComponent<CapsuleCollider>().enabled = true;
         transform.GetComponent<Animator>().SetTrigger("Revive");

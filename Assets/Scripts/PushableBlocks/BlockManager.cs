@@ -30,7 +30,6 @@ public class BlockManager : MonoBehaviour
     private void ResetBlocksToState(PlayRecord.MoveState moveState)
     {
         List<PlayRecord.Block> blockMetadata = moveState.blockMetadata;
-        Debug.Log(blockMetadata);
         IList<GameObject> allGameBlocks = playRecord.GetAllBlocksInGame();
         List<GameObject> blocksRerolled = new List<GameObject>();
         for (int i = 0; i < blockMetadata.Count; i++)
