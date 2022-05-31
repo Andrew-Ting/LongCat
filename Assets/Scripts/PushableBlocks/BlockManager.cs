@@ -12,15 +12,40 @@ public class BlockManager : MonoBehaviour
     private GroundManager groundManager;
     private List<GameObject> unmovableBlocksOfCurrentMove = new List<GameObject>(); // populated when groundManager's PopulateBlockManagerCurrentMove is called
     private CatMovement catMovement;
+    private PlayRecord playRecord;
     void Start()
     {
         groundManager = FindObjectOfType<GroundManager>();
         catMovement = FindObjectOfType<CatMovement>();
+        playRecord = FindObjectOfType<PlayRecord>();
         foreach (Transform children in transform) {
             blocks.Add(children.gameObject);
         }
+        FindObjectOfType<PlayRecord>().InitializeBlockManager(this, blocks); // terrible model of calling a class to reference it. TODO: find a better solution to reference this properly in PlayRecord despite not being initialized during PlayRecord's start
         StartCoroutine(BlockFallSimulation());
         catMovement.CatMoveAction += (Vector3 direction) => BlockFallManagement();
+        playRecord.UndoEvent += ResetBlocksToState;
+    }
+
+    private void ResetBlocksToState(PlayRecord.MoveState moveState)
+    {
+        List<PlayRecord.Block> blockMetadata = moveState.blockMetadata;
+        Debug.Log(blockMetadata);
+        IList<GameObject> allGameBlocks = playRecord.GetAllBlocksInGame();
+        List<GameObject> blocksRerolled = new List<GameObject>();
+        for (int i = 0; i < blockMetadata.Count; i++)
+        {
+            PlayRecord.Block currentBlock = blockMetadata[i];
+            if (currentBlock.isActive)
+            {
+                allGameBlocks[i].SetActive(true);
+                allGameBlocks[i].transform.position = currentBlock.position;
+                blocksRerolled.Add(allGameBlocks[i]);
+            } else
+            {
+                allGameBlocks[i].SetActive(false);
+            }
+        }
     }
 
     public List<GameObject> GetAllBlocks() {
@@ -79,5 +104,9 @@ public class BlockManager : MonoBehaviour
             movedBlocks.Remove(block);
         }
         return movedBlocks;
+    }
+    public IList<GameObject> GetCurrentBlocksState()
+    {
+        return blocks.AsReadOnly();
     }
 }
