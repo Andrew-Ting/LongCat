@@ -19,26 +19,30 @@ public class CatMovement : MonoBehaviour
     LayerMask objects = (1 << 6 | 1 << 7);
     public event Action<Vector3> CatMoveAction;
     public event Action<bool> CatLoaded;
+    public event Action<int> CatHeightChangeAction;
 
     private CameraController cameraController;
+    private PlayRecord playRecord;
     private BlockManager blockManager;
     private Vector3 moveCatVector; // direction cat will move once it is ready for movement
     private bool areBlocksMoving = false;
+    private bool isCatClimbing = false;
     private Dictionary<DataClass.PowerUp, ItemCountController> itemCountController;
     private GameManager gameManager;
+    private DataClass.Directions catFacingDirection;
     //for animation
     [Header("For animation")]
     [SerializeField]private float animSpeed = 0.05f;
     [SerializeField] private float rotateSpeed = 0.04f;
     private Transform catModelGameObject;
 
+    [SerializeField] private float climbAnimationTime = 4f;
     public void MoveCat(DataClass.Directions dirIndex)
     {
-        if (areBlocksMoving || Time.timeScale == 0) // you don't want the cat to be able to move as blocks are falling; opens a can of worms in logic
+        if (areBlocksMoving || Time.timeScale == 0 || isCatClimbing) // you don't want the cat to be able to move as blocks are falling; opens a can of worms in logic
             return;
-        int p = ((int)dirIndex + (int)cameraController.GetCameraView()) % 4;
-        int dir = p < 2 ? 1 : -1;
-        Vector3 newDirection = p % 2 == 0 ? dir * Vector3.forward : dir * Vector3.right;
+        catFacingDirection = dirIndex;
+        Vector3 newDirection = ConvertCatDirectionToVector3(dirIndex);
         StopCoroutine(CatRotate(newDirection));
         StartCoroutine(CatRotate(newDirection));
         Vector3 newMoveDirection = newDirection; // this is relative
@@ -131,12 +135,21 @@ public class CatMovement : MonoBehaviour
         CatMoveAction?.Invoke(newMoveDirection);
     }
 
+    public Vector3 ConvertCatDirectionToVector3(DataClass.Directions dirIndex)
+    {
+        int p = ((int)dirIndex + (int)cameraController.GetCameraView()) % 4;
+        int dir = p < 2 ? 1 : -1;
+        Vector3 newDirection = p % 2 == 0 ? dir * Vector3.forward : dir * Vector3.right;
+        return newDirection;
+    }
+
     public void ReadyForMovement() { // called by BlockManager when all blocks have moved to fixed position
         CollectAllBerriesAlong(moveCatVector);
 
         StopCoroutine(CatFlatMove());
         StopCoroutine(CatDownMove());
 
+        bool isClimbing = false;
         //TODO: make going up; make local position - movecatvector instead of doing it individually
         if (Vector3.Magnitude(moveCatVector) == 1) // do animation when only goes forward
         {
@@ -153,31 +166,42 @@ public class CatMovement : MonoBehaviour
             else if (moveCatVector.y > 0)//going Up
             {
                 transform.position -= moveCatVector;
+                // begin climb animation
+                isCatClimbing = true; 
                 catModelGameObject.GetChild(catHeight - 1).GetComponent<Animator>().SetTrigger("Climb" + moveCatVector.y);
                 StartCoroutine(ResetLocalPositionAfterClimbAnimation());
             }
         }
-        transform.position += moveCatVector;
+        if (!isClimbing)
+        {
+            transform.position += moveCatVector;
+            moveCatVector = Vector3.zero;
+        }
     }
     IEnumerator ResetLocalPositionAfterClimbAnimation() {
-        yield return new WaitForSeconds(3.292f);
+        yield return new WaitForSeconds(climbAnimationTime);
+        isCatClimbing = false;
         transform.position += moveCatVector;
+        moveCatVector = Vector3.zero;
     }
-    IEnumerator CatRotate(Vector3 direction)
+    IEnumerator CatRotate(Vector3 direction, bool hasTransition = true)
     {
         float angle = Vector3.SignedAngle(transform.forward, direction, Vector3.up);
         transform.Rotate(Vector3.up, angle);
-        catModelGameObject.Rotate(Vector3.up, -angle);
-        float newAngle = angle * rotateSpeed;
-        float progress = 0;
-        while(progress <= 1)
+        if (hasTransition)
         {
-            catModelGameObject.transform.Rotate(Vector3.up, newAngle);
-            progress += rotateSpeed;
-            yield return new WaitForEndOfFrame();
+            catModelGameObject.Rotate(Vector3.up, -angle);
+            float newAngle = angle * rotateSpeed;
+            float progress = 0;
+            while (progress <= 1)
+            {
+                catModelGameObject.transform.Rotate(Vector3.up, newAngle);
+                progress += rotateSpeed;
+                yield return new WaitForEndOfFrame();
+            }
+            angle = Vector3.SignedAngle(transform.forward, direction, Vector3.up);
+            catModelGameObject.transform.Rotate(Vector3.up, angle);
         }
-        angle = Vector3.SignedAngle(transform.forward, direction, Vector3.up);
-        catModelGameObject.transform.Rotate(Vector3.up, angle);
     }
 
     IEnumerator CatFlatMove()
@@ -302,12 +326,18 @@ public class CatMovement : MonoBehaviour
         }
         bool growthSuccess = itemCountController[DataClass.PowerUp.Grow].AttemptDeductCountOfItem();
         if (growthSuccess)
+        {
+            CatHeightChangeAction(catHeight + 1);
             SetCatHeight(catHeight + 1);
+        }
     }
     public void AttemptShrink() {
         bool shrinkSuccess = itemCountController[DataClass.PowerUp.Shrink].AttemptDeductCountOfItem();
         if (shrinkSuccess)
+        {
+            CatHeightChangeAction(catHeight - 1);
             SetCatHeight(catHeight - 1);
+        }
     }
     void Awake()
     {
@@ -321,9 +351,20 @@ public class CatMovement : MonoBehaviour
             ItemCountController currentUICount = powerupTypes[i];
             itemCountController[currentUICount.GetPowerupType()] = currentUICount;
         }
+
+        playRecord = FindObjectOfType<PlayRecord>();
+        playRecord.UndoEvent += ResetCatToState;
+
         SetCatHeight(catHeight); 
     }
 
+    void ResetCatToState(PlayRecord.MoveState moveState)
+    {
+        transform.position = moveState.catPosition;
+        catFacingDirection = moveState.catDirection;
+        StartCoroutine(CatRotate(ConvertCatDirectionToVector3(moveState.catDirection), false));
+        SetCatHeight(moveState.catHeight);
+    }
     public void StartSetObject()
     {
         //blockManager = GameObject.Find("Map").GetComponentInChildren<BlockManager>();
@@ -375,5 +416,19 @@ public class CatMovement : MonoBehaviour
     {
         if (t < 0 || t > 1) return 0;
         else return -1 * (t - 1) * t;
+    }
+
+    // getters
+    public Vector3 GetCatPosition()
+    {
+        return gameObject.transform.position + moveCatVector; // cat position goes up by moveCatVector only after climb animation. It's effectively part of the cat's position
+    }
+    public DataClass.Directions GetCatDirection()
+    {
+        return catFacingDirection;
+    }
+    public int GetCatHeight()
+    {
+        return catHeight;
     }
 }

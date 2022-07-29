@@ -103,6 +103,6 @@ public class BlockController : MonoBehaviour
         return DataClass.BlockState.HasFallen;
     }
     public void SelfDestruct() {
-        Destroy(gameObject);
+        gameObject.SetActive(false); // sike; the object is not actually destroyed bc it can be revived with an undo
     }
 }
