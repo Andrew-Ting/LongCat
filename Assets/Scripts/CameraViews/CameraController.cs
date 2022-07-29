@@ -12,13 +12,14 @@ public class CameraController : MonoBehaviour
     private DataClass.ViewDirection currentView = DataClass.ViewDirection.North;
     private CatMovement catMovement;
     private Vector3 deltaCatMovement; 
+    private PlayRecord playRecord;
     public void RotateView(bool isDirectionClockwiseAbove) {
         currentView += (isDirectionClockwiseAbove ? 1 : -1);
         currentView = (DataClass.ViewDirection)(((int)currentView + 4) % 4);
         SetViewDirectionTo(currentView);
     }
 
-    void SetViewDirectionTo(DataClass.ViewDirection destinationView){
+    void SetViewDirectionTo(DataClass.ViewDirection destinationView, bool hasTransition = true){
         StopAllCoroutines();
         float cameraHeight = distanceToCharacter * Mathf.Sin(Mathf.PI / 180 * angleOfInclineDegrees);
         float cameraHorizontalProjection = distanceToCharacter * Mathf.Cos(Mathf.PI / 180 * angleOfInclineDegrees) / Mathf.Sqrt(2);
@@ -42,7 +43,9 @@ public class CameraController : MonoBehaviour
                 newRotation = Quaternion.Euler(angleOfInclineDegrees, 315, 0);
                 break;
         }
-        StartCoroutine(SetTransformQuaternion(newPosition, newRotation));
+       
+       StartCoroutine(SetTransformQuaternion(newPosition, newRotation, hasTransition));
+        
     }
 
     public DataClass.ViewDirection GetCameraView() {
@@ -57,6 +60,8 @@ public class CameraController : MonoBehaviour
     private void Awake()
     {
         catMovement = FindObjectOfType<CatMovement>();
+        playRecord = FindObjectOfType<PlayRecord>();
+        playRecord.UndoEvent += SetTransformRelativeToCatInstantly;
     }
 
     void OnEnable() {
@@ -70,7 +75,7 @@ public class CameraController : MonoBehaviour
         SetViewDirectionTo(currentView); 
     }
 
-    IEnumerator SetTransformQuaternion(Vector3 newCameraPos, Quaternion newCameraRot)
+    IEnumerator SetTransformQuaternion(Vector3 newCameraPos, Quaternion newCameraRot, bool hasTransition)
     {
         float cameraHeight = distanceToCharacter * Mathf.Sin(Mathf.PI / 180 * angleOfInclineDegrees);
         float progress = 0;
@@ -79,13 +84,26 @@ public class CameraController : MonoBehaviour
         startPos -= pivotOfRotation;
         newCameraPos -= pivotOfRotation;
         Quaternion startAngle = transform.rotation;
-        while(progress <= 1)
+        if (hasTransition)
         {
-            transform.position = Vector3.Slerp(startPos, newCameraPos, progress) + Vector3.up * cameraHeight + deltaCatMovement;
-            transform.rotation = Quaternion.Slerp(startAngle, newCameraRot, progress);
-            progress += switchViewSpeed;
-            yield return null;
+            while (progress <= 1)
+            {
+                transform.position = Vector3.Slerp(startPos, newCameraPos, progress) + Vector3.up * cameraHeight + deltaCatMovement;
+                transform.rotation = Quaternion.Slerp(startAngle, newCameraRot, progress);
+                progress += switchViewSpeed;
+                yield return null;
+            }
         }
+        else
+        {
+            transform.position = newCameraPos + Vector3.up * cameraHeight + deltaCatMovement;
+            transform.rotation = newCameraRot;
+        }
+    }
+    private void SetTransformRelativeToCatInstantly(PlayRecord.MoveState moveState)
+    {
+        deltaCatMovement = moveState.catPosition;
+        SetViewDirectionTo(currentView, false);
     }
 
     IEnumerator SetTransform(Vector3 newCameraPos)

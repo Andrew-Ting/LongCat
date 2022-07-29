@@ -17,6 +17,6 @@ public class WinUIScript : MonoBehaviour
 
     public void NextLevel()
     {
-        LevelLoader.LoadNextGame(gameManager.levelData.id);
+        LevelLoader.LoadNextGame(gameManager.GetLevelData().id);
     }
 }
