@@ -18,6 +18,8 @@ public class CatMovement : MonoBehaviour
     [SerializeField]
     LayerMask objects = (1 << 6 | 1 << 7);
     public event Action<Vector3> CatMoveAction;
+    public event Action<bool> CatLoaded;
+
     private CameraController cameraController;
     private BlockManager blockManager;
     private Vector3 moveCatVector; // direction cat will move once it is ready for movement
@@ -347,10 +349,19 @@ public class CatMovement : MonoBehaviour
         while (map == null)
         {
             map = GameObject.Find("Map");
-            //blockManager = FindObjectOfType<BlockManager>();
             yield return new WaitForEndOfFrame();
         }
         blockManager = map.GetComponentInChildren<BlockManager>();
+        try
+        {
+            transform.position = map.GetComponentInChildren<StartingBlock>().GetPos();
+        }
+        catch
+        {
+            Debug.Log("starting block not made");
+            transform.position = new Vector3(0, 0, 0);
+        }
+        CatLoaded?.Invoke(true);
     }
 
     private float JumpDownCurve(float t) // returns y-axis given t from 0 to 1
