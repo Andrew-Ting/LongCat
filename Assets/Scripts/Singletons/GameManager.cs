@@ -4,16 +4,18 @@ using UnityEngine.SceneManagement;
 public class GameManager : MonoBehaviour
 {
     public GameObject WinUI;
-    [HideInInspector] public LevelData levelData;
+    [HideInInspector] private LevelData levelData;
     [SerializeField] CatMovement cat;
     private bool fished;
     private bool fishCollected;
 
     LevelCollection levelCollection;
+    PlayRecord playRecord;
     // Start is called before the first frame update
     private void Awake()
     {
         levelCollection = FindObjectOfType<LevelCollection>();
+        playRecord = FindObjectOfType<PlayRecord>();
         #if UNITY_EDITOR
         if (levelCollection == null)
         {
@@ -76,5 +78,9 @@ public class GameManager : MonoBehaviour
     public bool FishCollectedThisRound()
     {
         return fishCollected;
+    }
+    public LevelData GetLevelData()
+    {
+        return levelData;
     }
 }

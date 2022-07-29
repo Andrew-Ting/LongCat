@@ -8,14 +8,24 @@ public class PowerupController : MonoBehaviour
         return powerupType;
     }
     public void SelfDestruct() {
-
         transform.GetComponent<Animator>().SetTrigger("Collect");
     }
     public void DestroyCollider() {
-        Destroy(transform.GetComponent<CapsuleCollider>());
+        transform.GetComponent<CapsuleCollider>().enabled = false;
     }
     public void DestroyGameObject()
     {
-        Destroy(gameObject);
+        gameObject.SetActive(false); // sike; the object is not actually destroyed bc it can be revived with an undo
+    }
+    public void ReviveObject()
+    {
+        gameObject.SetActive(true);
+        transform.GetComponent<CapsuleCollider>().enabled = true;
+        transform.GetComponent<Animator>().SetTrigger("Revive");
+    }
+    void Start() // ideally we should find a way for PlayRecord to get the powerups, and not PowerupController to send it to PlayRecord, but the order of start function execution prevents this :(
+    {
+        PlayRecord playRecord = FindObjectOfType<PlayRecord>();
+        playRecord.AddPowerupToList(this.gameObject);
     }
 }

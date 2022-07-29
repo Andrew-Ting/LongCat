@@ -9,11 +9,13 @@ public abstract class ItemCountController : MonoBehaviour
     protected int countOfItem = 0;
     protected Text countText;
     protected CatMovement catMovement;
+    protected PlayRecord playRecord;
     // Start is called before the first frame update
-    void Start()
+    protected void Start()
     {
         countText = GetComponent<Text>();
         catMovement = FindObjectOfType<CatMovement>();
+        playRecord = FindObjectOfType<PlayRecord>();
         Button thisButton = GetComponent<Button>();
         thisButton.onClick.AddListener(() => {UseBerry();}); 
         UpdateCountText();
@@ -33,6 +35,15 @@ public abstract class ItemCountController : MonoBehaviour
     }
     private void UpdateCountText() {
         countText.text = countOfItem.ToString();
+    }
+    public int GetCountOfItem()
+    {
+        return countOfItem;
+    }
+    protected void UpdateItemCountWithUndoIndex(PlayRecord.MoveState moveState, int index)
+    {
+        countOfItem = moveState.powerupQuantity[index];
+        UpdateCountText();
     }
     protected abstract void UseBerry();
     public abstract DataClass.PowerUp GetPowerupType();
