@@ -18,7 +18,7 @@ public class CatMovement : MonoBehaviour
     [SerializeField]
     LayerMask objects = (1 << 6 | 1 << 7);
     public event Action<Vector3> CatMoveAction;
-    public event Action<bool> CatLoaded; //use for future events when cat has loaded in
+    public event Action<bool> CatLoaded; //used in CameraController
     public event Action<int> CatHeightChangeAction;
 
     private CameraController cameraController;
