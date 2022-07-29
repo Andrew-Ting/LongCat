@@ -18,7 +18,7 @@ public class CatMovement : MonoBehaviour
     [SerializeField]
     LayerMask objects = (1 << 6 | 1 << 7);
     public event Action<Vector3> CatMoveAction;
-    public event Action<bool> CatLoaded;
+    public event Action<bool> CatLoaded; //use for future events when cat has loaded in
     public event Action<int> CatHeightChangeAction;
 
     private CameraController cameraController;
@@ -393,15 +393,17 @@ public class CatMovement : MonoBehaviour
             yield return new WaitForEndOfFrame();
         }
         blockManager = map.GetComponentInChildren<BlockManager>();
-        try
+        if(map.GetComponentInChildren<StartingBlock>() == null)
         {
-            transform.position = map.GetComponentInChildren<StartingBlock>().GetPos();
-        }
-        catch
-        {
+            //it doesn't exist
             Debug.Log("starting block not made");
-            transform.position = new Vector3(0, 0, 0);
+            transform.position = Vector3.zero;
         }
+        else
+        {
+
+        }
+            transform.position = map.GetComponentInChildren<StartingBlock>().GetPos();
         CatLoaded?.Invoke(true);
     }
 

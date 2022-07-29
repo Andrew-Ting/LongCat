@@ -75,9 +75,9 @@ public class CameraController : MonoBehaviour
         catMovement.CatLoaded -= CatLoad;
     }
 
-    void CatLoad(bool t)
+    void CatLoad(bool isLoaded)
     {
-        if(t)
+        if(isLoaded)
         {
             deltaCatMovement += catMovement.transform.position;
             SetViewDirectionTo(currentView);

@@ -1,13 +1,14 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class StartingBlock : MonoBehaviour
 {
-    // Start is called before the first frame update
-    public Vector3 GetPos()
+    public void Start()
     {
         transform.GetComponent<MeshRenderer>().enabled = false;
+    }
+
+    public Vector3 GetPos()
+    {
         return transform.position;
     }
 }
