@@ -401,9 +401,9 @@ public class CatMovement : MonoBehaviour
         }
         else
         {
-
-        }
             transform.position = map.GetComponentInChildren<StartingBlock>().GetPos();
+        }
+            
         CatLoaded?.Invoke(true);
     }
 
