@@ -1,5 +1,6 @@
 using System.Collections;
 using UnityEngine;
+using System;
 
 public class CameraController : MonoBehaviour
 {
@@ -13,6 +14,7 @@ public class CameraController : MonoBehaviour
     private CatMovement catMovement;
     private Vector3 deltaCatMovement; 
     private PlayRecord playRecord;
+
     public void RotateView(bool isDirectionClockwiseAbove) {
         currentView += (isDirectionClockwiseAbove ? 1 : -1);
         currentView = (DataClass.ViewDirection)(((int)currentView + 4) % 4);
@@ -66,13 +68,20 @@ public class CameraController : MonoBehaviour
 
     void OnEnable() {
         catMovement.CatMoveAction += AdjustPosition;
+        catMovement.CatLoaded += CatLoad;
     }
     void OnDisable() {
         catMovement.CatMoveAction -= AdjustPosition;
+        catMovement.CatLoaded -= CatLoad;
     }
-    void Start() {
-        deltaCatMovement += catMovement.transform.position;
-        SetViewDirectionTo(currentView); 
+
+    void CatLoad(bool isLoaded)
+    {
+        if(isLoaded)
+        {
+            deltaCatMovement += catMovement.transform.position;
+            SetViewDirectionTo(currentView);
+        }
     }
 
     IEnumerator SetTransformQuaternion(Vector3 newCameraPos, Quaternion newCameraRot, bool hasTransition)

@@ -22,7 +22,7 @@ public class GameManager : MonoBehaviour
             SceneManager.LoadScene(0);
             return;
         }
-#endif
+        #endif
         cat.gameObject.SetActive(false);
         GameData gameData = SaveLoadManager.LoadGameData();
         if (gameData == null)
@@ -32,16 +32,12 @@ public class GameManager : MonoBehaviour
         }
         else
         {
-            
-            
             //do loading
             levelData = levelCollection.levelDataCollection[gameData.puzzleID];
             SceneManager.LoadScene(levelData.GetSceneBuildIndex(), LoadSceneMode.Additive);
-            cat.transform.position = levelData.catStartingPos;
             cat.SetCatHeight(levelData.catStartingHeight);
             cat.gameObject.SetActive(true);
             cat.StartSetObject();
-
 
             FindObjectOfType<AudioManager>().TransitionBGM("World" + levelData.worldNumber + "Theme", 1f);
             if (FindObjectOfType<PlayerManager>().IsFished(levelData.id))

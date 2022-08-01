@@ -15,7 +15,6 @@ public class LevelData : ScriptableObject
     public int levelNumber;
 
     [Header("Level inside")]
-    public Vector3 catStartingPos;
     [Range(1,5)]
     public int catStartingHeight;
 
