@@ -149,7 +149,6 @@ public class CatMovement : MonoBehaviour
         StopCoroutine(CatFlatMove());
         StopCoroutine(CatDownMove());
 
-        bool isClimbing = false;
         //TODO: make going up; make local position - movecatvector instead of doing it individually
         if (Vector3.Magnitude(moveCatVector) == 1) // do animation when only goes forward
         {
@@ -165,14 +164,13 @@ public class CatMovement : MonoBehaviour
             }
             else if (moveCatVector.y > 0)//going Up
             {
-                transform.position -= moveCatVector;
                 // begin climb animation
-                isCatClimbing = true; 
+                isCatClimbing = true;
                 catModelGameObject.GetChild(catHeight - 1).GetComponent<Animator>().SetTrigger("Climb" + moveCatVector.y);
                 StartCoroutine(ResetLocalPositionAfterClimbAnimation());
             }
         }
-        if (!isClimbing)
+        if (!isCatClimbing)
         {
             transform.position += moveCatVector;
             moveCatVector = Vector3.zero;
