@@ -55,7 +55,7 @@ public class PlayRecord : MonoBehaviour
 
     public void InitializeBlockManager(BlockManager blockManager, List<GameObject> blocks) {
         this.blockManager = blockManager;
-        blockManager.moveCompleted += () => StartCoroutine(RecordMoveChange());
+        blockManager.moveCompleted += () => RecordMoveChange();
         allBlocksInGame = new List<GameObject>(blocks);
     }
 
@@ -81,18 +81,18 @@ public class PlayRecord : MonoBehaviour
                 Debug.LogError("EXPECTED: " + moves.Peek().catDirection + " BUT GOT " + catMovement.GetCatDirection());
             }
         }
-        RecordChange(false, false, true, false, true, true);
+        StartCoroutine(RecordChange(false, false, true, false, true, true));
     }
 
-    private IEnumerator RecordMoveChange() // records player movement and corresponding world state changes
+    private void RecordMoveChange() // records player movement and corresponding world state changes
     {
-        yield return null; // wait a frame before recording changes to ensure new game state has been applied; no race conditions
-        RecordChange(true, true, false, true, true, true);
+        StartCoroutine(RecordChange(true, true, false, true, true, true));
     }
 
     // for optimization purposes; set to true only the parameters that could have changed from a move
-    private void RecordChange (bool catPositionChanged, bool catDirectionChanged, bool catHeightChanged, bool blockMetadataChanged, bool isPowerupCollectedChanged, bool powerupQuantityChanged) 
+    private IEnumerator RecordChange (bool catPositionChanged, bool catDirectionChanged, bool catHeightChanged, bool blockMetadataChanged, bool isPowerupCollectedChanged, bool powerupQuantityChanged) 
     {
+        yield return null; // wait a frame before recording changes to ensure new game state has been applied; no race conditions
         // state variables
         MoveState latestState;
         Vector3 catPosition;
@@ -158,7 +158,7 @@ public class PlayRecord : MonoBehaviour
 
     public void UndoMove() // function called by undo button on click
     {
-        if (moves.Count > 0) { // disable undoing beyond first move
+        if (moves.Count > 1) { // disable undoing beyond first move
             moves.Pop();
             UndoEvent.Invoke(moves.Peek());
         }
