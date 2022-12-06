@@ -382,6 +382,7 @@ public class CatMovement : MonoBehaviour
         }
     }
 
+    //iirc this is because of the timing thing with the cat
     IEnumerator SetObject()
     {
         GameObject map = null;

@@ -35,6 +35,7 @@ public class GameManager : MonoBehaviour
             //do loading
             levelData = levelCollection.levelDataCollection[gameData.puzzleID];
             SceneManager.LoadScene(levelData.GetSceneBuildIndex(), LoadSceneMode.Additive);
+            //I added the event here. but tbh I think the loading thing can be done in playrecord directly since that's where it's needed to be naman?
             cat.SetCatHeight(levelData.catStartingHeight);
             cat.gameObject.SetActive(true);
             cat.StartSetObject();
