@@ -7,8 +7,8 @@ using System.Collections;
  * Stop()
  * Mute()
  * Unmute()
- * TransitionBGM(string name, float timeChange)
- * PlayTemporary(string name)
+ * TransitionBGM(string name, float timeChange) 
+ * PlayTemporary(string name) //sfx - only for itself
 */
 
 public class AudioManager : MonoBehaviour
