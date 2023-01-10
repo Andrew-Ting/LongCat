@@ -3,7 +3,7 @@ using UnityEngine;
 public class PowerupController : MonoBehaviour
 {
     [SerializeField] private DataClass.PowerUp powerupType;
-    // Start is called before the first frame update
+
     public DataClass.PowerUp GetPowerupType() {
         return powerupType;
     }
@@ -13,19 +13,26 @@ public class PowerupController : MonoBehaviour
     public void DestroyCollider() {
         transform.GetComponent<CapsuleCollider>().enabled = false;
     }
-    public void DestroyGameObject()
+
+    public void ForceAnimationComplete()
     {
-        gameObject.SetActive(false); // sike; the object is not actually destroyed bc it can be revived with an undo
+
+        transform.GetComponent<Animator>().SetTrigger("AnimComplete");
     }
     public void ReviveObject()
     {
-        gameObject.SetActive(true);
         transform.GetComponent<CapsuleCollider>().enabled = true;
+        Debug.Log("reviving can");
         transform.GetComponent<Animator>().SetTrigger("Revive");
+    }
+    public bool isActive()
+    {
+        return transform.GetComponent<CapsuleCollider>().enabled; // a deactivated collider is an uncollectible powerup
     }
     void Start() // ideally we should find a way for PlayRecord to get the powerups, and not PowerupController to send it to PlayRecord, but the order of start function execution prevents this :(
     {
         PlayRecord playRecord = FindObjectOfType<PlayRecord>();
         playRecord.AddPowerupToList(this.gameObject);
+        playRecord.UndoEvent += (moveState) => ForceAnimationComplete();
     }
 }

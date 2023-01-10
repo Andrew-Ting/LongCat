@@ -121,6 +121,11 @@ public class PlayRecord : MonoBehaviour
             isPowerupCollected = !isPowerupCollectedChanged ? latestState.isPowerupCollected : ParseIsPowerupCollected();
             powerupQuantity = !powerupQuantityChanged ? latestState.powerupQuantity : ParsePowerupQuantity();
         }
+        string v = "";
+        for (int i = 0; i < isPowerupCollected.Count; i++) {
+            v += (isPowerupCollected[i] ? "true" : "false") + " ";
+        }
+        Debug.Log(v);
         moves.Push(new MoveState(catPosition, catDirection, catHeight, blockMetadata, isPowerupCollected, powerupQuantity));
     }
 
@@ -175,7 +180,7 @@ public class PlayRecord : MonoBehaviour
     {
         for (int i = 0; i < allPowerupsInGame.Count; i++)
         {
-            if (!moveState.isPowerupCollected[i] && !allPowerupsInGame[i].activeSelf)
+            if (!moveState.isPowerupCollected[i] && !allPowerupsInGame[i].GetComponent<PowerupController>().isActive())
             {
                 allPowerupsInGame[i].GetComponent<PowerupController>().ReviveObject();
             } 
