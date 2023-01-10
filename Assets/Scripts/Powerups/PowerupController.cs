@@ -16,7 +16,6 @@ public class PowerupController : MonoBehaviour
 
     public void ForceAnimationComplete()
     {
-
         transform.GetComponent<Animator>().SetTrigger("AnimComplete");
     }
     public void ReviveObject()

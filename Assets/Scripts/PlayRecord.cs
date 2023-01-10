@@ -121,6 +121,7 @@ public class PlayRecord : MonoBehaviour
             isPowerupCollected = !isPowerupCollectedChanged ? latestState.isPowerupCollected : ParseIsPowerupCollected();
             powerupQuantity = !powerupQuantityChanged ? latestState.powerupQuantity : ParsePowerupQuantity();
         }
+
         moves.Push(new MoveState(catPosition, catDirection, catHeight, blockMetadata, isPowerupCollected, powerupQuantity));
     }
 
