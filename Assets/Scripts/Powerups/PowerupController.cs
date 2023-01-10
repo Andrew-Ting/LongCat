@@ -22,7 +22,6 @@ public class PowerupController : MonoBehaviour
     public void ReviveObject()
     {
         transform.GetComponent<CapsuleCollider>().enabled = true;
-        Debug.Log("reviving can");
         transform.GetComponent<Animator>().SetTrigger("Revive");
     }
     public bool isActive()
