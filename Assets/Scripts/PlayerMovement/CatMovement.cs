@@ -36,7 +36,7 @@ public class CatMovement : MonoBehaviour
     [SerializeField] private float rotateSpeed = 0.04f;
     private Transform catModelGameObject;
 
-    [SerializeField] private float climbAnimationTime = 4f;
+    [SerializeField] private float climbAnimationTime = 2.12f;
     public void MoveCat(DataClass.Directions dirIndex)
     {
         if (areBlocksMoving || Time.timeScale == 0 || isCatClimbing) // you don't want the cat to be able to move as blocks are falling; opens a can of worms in logic
